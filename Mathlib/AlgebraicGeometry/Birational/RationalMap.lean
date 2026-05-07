@@ -116,6 +116,10 @@ def compHom (f : X.PartialMap Y) (g : Y ⟶ Z) : X.PartialMap Z where
   dense_domain := f.dense_domain
   hom := f.hom ≫ g
 
+@[simp]
+lemma compHom_id (f : X.PartialMap Y) : f.compHom (𝟙 Y) = f := by
+  ext <;> simp
+
 instance [X.Over S] [Y.Over S] [Z.Over S] (f : X.PartialMap Y) (g : Y ⟶ Z)
     [f.IsOver S] [g.IsOver S] : (f.compHom g).IsOver S where
 
@@ -123,6 +127,10 @@ instance [X.Over S] [Y.Over S] [Z.Over S] (f : X.PartialMap Y) (g : Y ⟶ Z)
 @[simps]
 def _root_.AlgebraicGeometry.Scheme.Hom.toPartialMap (f : X.Hom Y) :
     X.PartialMap Y := ⟨⊤, dense_univ, X.topIso.hom ≫ f⟩
+
+-- ??
+instance (f : X ⟶ Y) [hf : IsDominant f] : IsDominant f.toPartialMap.hom :=
+  MorphismProperty.RespectsIso.precomp _ _ f hf
 
 instance [X.Over S] [Y.Over S] (f : X ⟶ Y) [f.IsOver S] : f.toPartialMap.IsOver S where
 
