@@ -5,7 +5,7 @@ Authors: Justus Springer
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Birational.RationalMap
+public import Mathlib.AlgebraicGeometry.Birational.Dominant
 /-!
 
 # The category of schemes with birational maps
@@ -39,6 +39,48 @@ noncomputable def PartialMap.comp [PreirreducibleSpace X] [Nonempty Y]
     exact (opensRestrict _ (f.hom ⁻¹ᵁ g.domain)).1.2.dense ⟨x.1, ⟨x, hx, rfl⟩⟩
   hom := (f.domain.ι.isoImage (f.hom ⁻¹ᵁ g.domain)).inv ≫ (f.hom ∣_ g.domain) ≫ g.hom
 
+lemma PartialMap.restrict_comp [PreirreducibleSpace X] [Nonempty Y] (f : X.PartialMap Y)
+    [IsDominant f.hom] (U : X.Opens) (hU : Dense (U : Set X))
+    (hU' : U ≤ f.domain) (g : Y.PartialMap Z) :
+    (f.restrict U hU hU').comp g = (f.comp g).restrict
+      (opensRestrict _ (f.hom ⁻¹ᵁ g.domain) ⊓ U)
+      ((f.comp g).dense_domain.inter_of_isOpen_right hU U.2) inf_le_left := by
+  ext x
+  · constructor
+    · intro ⟨x', h₁, h₂⟩
+      refine ⟨?_, ?_⟩
+      simp at *
+      sorry
+    · sorry
+  · sorry
+
+lemma PartialMap.comp_restrict [PreirreducibleSpace X] [Nonempty Y] (f : X.PartialMap Y)
+    [IsDominant f.hom] (g : Y.PartialMap Z) (V : Y.Opens) (hV : Dense (V : Set Y))
+    (hV' : V ≤ g.domain) :
+    f.comp (g.restrict V hV hV') = (f.comp g).restrict
+      (opensRestrict _ (f.hom ⁻¹ᵁ V)) sorry sorry := by
+  sorry
+
+lemma PartialMap.comp_equiv_of_equiv_left [PreirreducibleSpace X] [Nonempty Y]
+    (f₁ f₂ : X.PartialMap Y) [IsDominant f₁.hom] [IsDominant f₂.hom]
+    (h : f₁.equiv f₂) (g : Y.PartialMap Z) :
+    (f₁.comp g).equiv (f₂.comp g) := sorry
+
+lemma PartialMap.comp_equiv_of_equiv_right [PreirreducibleSpace X] [Nonempty Y]
+    (f : X.PartialMap Y) [IsDominant f.hom] (g₁ g₂ : Y.PartialMap Z) (h : g₁.equiv g₂) :
+    (f.comp g₁).equiv (f.comp g₂) := sorry
+
+lemma PartialMap.comp_equiv_of_equiv [PreirreducibleSpace X] [Nonempty Y]
+    (f₁ f₂ : X.PartialMap Y) [IsDominant f₁.hom] [IsDominant f₂.hom] (hf : f₁.equiv f₂)
+    (g₁ g₂ : Y.PartialMap Z) (hg : g₁.equiv g₂) :
+    (f₁.comp g₁).equiv (f₂.comp g₂) := sorry
+
+noncomputable def RationalMap.comp [PreirreducibleSpace X] [Nonempty Y]
+    (f : X ⤏ Y) [f.IsDominant] (g : Y ⤏ Z) : X ⤏ Z :=
+  Quotient.liftOn g (PartialMap.toRationalMap ∘ f.dominantRep.comp) <| fun _ _ h ↦ by
+    rw [Function.comp_apply, Function.comp_apply, PartialMap.toRationalMap_eq_iff]
+    exact PartialMap.comp_equiv_of_equiv_right _ _ _ h
+
 lemma PartialMap.comp_toPartialMap [PreirreducibleSpace X] [Nonempty Y] (f : X.PartialMap Y)
     [IsDominant f.hom] (g : Y ⟶ Z) : f.comp g.toPartialMap = f.compHom g := by
   ext x
@@ -63,5 +105,3 @@ lemma PartialMap.id_comp [IrreducibleSpace X] (f : X.PartialMap Y) :
   · simp
     sorry
 
-noncomputable def RationalMap.comp [IrreducibleSpace X] [IrreducibleSpace Y]
-  (f : X ⤏ Y) (g : Y ⤏ Z) : X ⤏ Z := sorry
