@@ -5,6 +5,7 @@ Authors: Justus Springer
 -/
 module
 
+public import Mathlib.AlgebraicGeometry.AffineSpace
 public import Mathlib.AlgebraicGeometry.Birational.RationalMap
 /-!
 
@@ -16,94 +17,101 @@ TODO
 
 @[expose] public section
 
-universe u
+universe u v
 
 open CategoryTheory hiding Quotient
 
 namespace AlgebraicGeometry
 
-variable {X Y Z S : Scheme.{u}} (sX : X ⟶ S) (sY : Y ⟶ S)
-
 namespace Scheme
 
+variable {X Y Z S : Scheme.{u}}
+
 /--
-A bipartial map from `X` to `Y` (`X.BipartialMap Y`) is... TODO
+A partial isomorphism from `X` to `Y` (`X.BipartialMap Y`) is... TODO
 -/
-structure BipartialMap (X Y : Scheme.{u}) where
-  /-- The domain of definition of a bipartial map. -/
+structure PartialIso (X Y : Scheme.{u}) where
+  /-- The domain of definition of a partial iso. -/
   domain : X.Opens
   dense_domain : Dense (domain : Set X)
-  /-- The target of a bipartial map. -/
+  /-- The target of a partial iso. -/
   target : Y.Opens
   dense_target : Dense (target : Set Y)
-  /-- The underlying morphism of a partial map. -/
-  hom : domain.toScheme ≅ target.toScheme
+  /-- The underlying isomorphism of a partial iso. -/
+  iso : domain.toScheme ≅ target.toScheme
 
-namespace BipartialMap
+namespace PartialIso
 
-def symm (f : X.BipartialMap Y) : Y.BipartialMap X where
+variable (S) in
+abbrev IsOver (f : X.PartialIso Y) [X.Over S] [Y.Over S] : Prop :=
+  f.iso.hom.IsOver S
+
+def refl : X.PartialIso X where
+  domain := ⊤
+  dense_domain := dense_univ
+  target := ⊤
+  dense_target := dense_univ
+  iso := Iso.refl _
+
+def symm (f : X.PartialIso Y) : Y.PartialIso X where
   domain := f.target
   dense_domain := f.dense_target
   target := f.domain
   dense_target := f.dense_domain
-  hom := f.hom.symm
+  iso := f.iso.symm
 
-def toPartialMap (f : X.BipartialMap Y) : X.PartialMap Y where
+def toPartialMap (f : X.PartialIso Y) : X.PartialMap Y where
   domain := f.domain
   dense_domain := f.dense_domain
-  hom := f.hom.hom ≫ f.target.ι
+  hom := f.iso.hom ≫ f.target.ι
 
-lemma ext_iff (f g : X.BipartialMap Y) :
+lemma ext_iff (f g : X.PartialIso Y) :
     f = g ↔ ∃ (e : f.domain = g.domain) (e' : g.target = f.target),
-      f.hom = X.isoOfEq e ≪≫ g.hom ≪≫ Y.isoOfEq e' := by
+      f.iso = X.isoOfEq e ≪≫ g.iso ≪≫ Y.isoOfEq e' := by
   constructor
   · rintro rfl
     simp
   · obtain ⟨U₁, hU₁, U₂, hU₂, f⟩ := f
     obtain ⟨V₁, hV₁, V₂, hU₂, g⟩ := g
-    simp only [mk.injEq, forall_exists_index]
+    simp only [forall_exists_index]
     rintro rfl rfl e
     simpa using e
 
 @[ext]
-lemma ext (f g : X.BipartialMap Y) (e : f.domain = g.domain) (e' : g.target = f.target)
-    (H : f.hom = X.isoOfEq e ≪≫ g.hom ≪≫ Y.isoOfEq e') : f = g := by
+lemma ext (f g : X.PartialIso Y) (e : f.domain = g.domain) (e' : g.target = f.target)
+    (H : f.iso = X.isoOfEq e ≪≫ g.iso ≪≫ Y.isoOfEq e') : f = g := by
   rw [ext_iff]
   exact ⟨e, e', H⟩
 
-/-- The restriction of a partial map to a smaller domain. -/
-/- @[simps hom domain] -/
-noncomputable
-def restrict (f : X.BipartialMap Y) (U : X.Opens) (hU : Dense (U : Set X)) : X.BipartialMap Y where
-  domain := U
-  dense_domain := hU
-  target := opensRestrict _ (f.hom.hom ''ᵁ ⊤)
-  dense_target := by
-    simp
-    sorry
-  hom := by
-    simp
-    sorry
-
-
 /-- The composition of a partial map and a morphism on the right. -/
 @[simps]
-noncomputable def compIso (f : X.BipartialMap Y) (g : Y ≅ Z) : X.BipartialMap Z where
+noncomputable def compIso (f : X.PartialIso Y) (g : Y ≅ Z) : X.PartialIso Z where
   domain := f.domain
   dense_domain := f.dense_domain
   target := g.hom ''ᵁ f.target
   dense_target := by sorry
-  hom := f.hom ≪≫ g.hom.isoImage f.target
+  iso := f.iso ≪≫ g.hom.isoImage f.target
 
 noncomputable
-def _root_.CategoryTheory.Iso.toBipartialMap (f : X ≅ Y) : X.BipartialMap Y where
+def _root_.CategoryTheory.Iso.toPartialIso (f : X ≅ Y) : X.PartialIso Y where
   domain := ⊤
   dense_domain := dense_univ
   target := ⊤
   dense_target := dense_univ
-  hom := X.topIso ≪≫ f ≪≫ Y.topIso.symm
+  iso := X.topIso ≪≫ f ≪≫ Y.topIso.symm
 
-end BipartialMap
+end PartialIso
+
+variable (X Y) in
+def Birational : Prop :=
+  Nonempty (PartialIso X Y)
+
+variable (X Y S) in
+def BirationalOver [X.Over S] [Y.Over S] :=
+  ∃ f : PartialIso X Y, f.IsOver S
+
+def RationalOver [X.Over S] : Prop :=
+  ∃ n, BirationalOver X (AffineSpace (Fin n) S) S
 
 end Scheme
 
