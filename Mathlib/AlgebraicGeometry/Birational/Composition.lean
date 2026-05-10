@@ -40,11 +40,15 @@ noncomputable def comp (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.PartialMap
     exact (f.domain.ι ''ᵁ f.hom ⁻¹ᵁ g.domain).2.dense ⟨x.1, ⟨x, hx, rfl⟩⟩
   hom := (f.domain.ι.isoImage _).inv ≫ (f.hom ∣_ g.domain) ≫ g.hom
 
+attribute [local instance] PartialMap.isDominant_restrict_hom in
 lemma comp_restrict_left (f : X.PartialMap Y) [IsDominant f.hom] (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) (g : Y.PartialMap Z) :
     (f.restrict U hU hU').comp g = (f.comp g).restrict (f.domain.ι ''ᵁ f.hom ⁻¹ᵁ g.domain ⊓ U)
       ((f.comp g).dense_domain.inter_of_isOpen_right hU U.2) inf_le_left := by
-  sorry
+  ext1
+  · simp only [comp_domain, restrict_domain, restrict_hom, Hom.comp_preimage,
+      ι_image_homOfLE_eq_ι_image_inf]
+  · sorry
 
 lemma comp_restrict_right (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.PartialMap Z)
     (V : Y.Opens) (hV : Dense (V : Set Y)) (hV' : V ≤ g.domain) :

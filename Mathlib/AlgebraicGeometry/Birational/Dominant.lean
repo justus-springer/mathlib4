@@ -28,7 +28,7 @@ namespace Scheme
 
 namespace PartialMap
 
-instance isDominant_restrict_hom (f : X.PartialMap Y) [IsDominant f.hom] (U : X.Opens)
+lemma isDominant_restrict_hom (f : X.PartialMap Y) [IsDominant f.hom] (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) : IsDominant (f.restrict U hU hU').hom := by
   dsimp only [restrict_domain, restrict_hom]
   have : IsDominant (X.homOfLE hU') := Opens.isDominant_homOfLE hU hU'
@@ -41,12 +41,9 @@ lemma isDominant_hom_of_isDominant_restrict_hom (f : X.PartialMap Y) (U : X.Open
 
 lemma isDominant_hom_iff_isDominant_restrict_hom (f : X.PartialMap Y) (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) :
-    IsDominant f.hom ↔ IsDominant (f.restrict U hU hU').hom := by
-  constructor
-  · intro H
-    apply isDominant_restrict_hom
-  · intro H
-    apply isDominant_hom_of_isDominant_restrict_hom (H := H)
+    IsDominant f.hom ↔ IsDominant (f.restrict U hU hU').hom :=
+  ⟨fun _ ↦ f.isDominant_restrict_hom U hU hU',
+    fun _ ↦ f.isDominant_hom_of_isDominant_restrict_hom U hU hU'⟩
 
 lemma isDominant_hom_iff_of_equiv (f g : X.PartialMap Y) (h : f.equiv g) :
     IsDominant f.hom ↔ IsDominant g.hom := by
@@ -74,18 +71,18 @@ noncomputable def dominantRep (f : X ⤏ Y) [f.IsDominant] : X.PartialMap Y :=
 instance (f : X ⤏ Y) [f.IsDominant] : IsDominant f.dominantRep.hom :=
   f.exists_dominant_rep.choose_spec.1
 
-lemma toRationalMap_dominantRep (f : X ⤏ Y) [f.IsDominant] :
-    f.dominantRep.toRationalMap = f :=
+lemma toRationalMap_dominantRep (f : X ⤏ Y) [f.IsDominant] : f.dominantRep.toRationalMap = f :=
   f.exists_dominant_rep.choose_spec.2
 
 lemma IsDominant.of_exists_dominant_rep (f : X ⤏ Y) (g : X.PartialMap Y)
     [IsDominant g.hom] (hg : g.toRationalMap = f) : f.IsDominant :=
   ⟨g, ‹_›, hg⟩
 
-instance (f : X.PartialMap Y) [IsDominant f.hom] : f.toRationalMap.IsDominant :=
-  ⟨f, ‹_›, rfl⟩
-
 end RationalMap
+
+lemma PartialMap.isDominant_toRationalMap (f : X.PartialMap Y) [IsDominant f.hom] :
+    f.toRationalMap.IsDominant :=
+  ⟨f, ‹_›, rfl⟩
 
 lemma PartialMap.isDominant_hom_of_toRationalMap_eq (f : X.PartialMap Y) (g : X ⤏ Y)
     [H : g.IsDominant] (h : f.toRationalMap = g) : IsDominant f.hom := by
