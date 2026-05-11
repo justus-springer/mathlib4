@@ -26,27 +26,27 @@ variable {X Y Z : Scheme.{u}}
 
 namespace Scheme
 
-structure BirationalScheme where
+structure BirationalCat where
   private mk ::
   carrier : Scheme.{u}
   [isIrreducible : IrreducibleSpace carrier]
 
-attribute [instance] BirationalScheme.isIrreducible
+attribute [instance] BirationalCat.isIrreducible
 
-structure BirationalScheme.Hom (X Y : BirationalScheme.{u}) where
+structure BirationalCat.Hom (X Y : BirationalCat.{u}) where
   hom : X.carrier ⤏ Y.carrier
   [isDominant : hom.IsDominant]
 
-attribute [instance] BirationalScheme.Hom.isDominant
+attribute [instance] BirationalCat.Hom.isDominant
 
-noncomputable instance : Category (BirationalScheme.{u}) where
-  Hom X Y := BirationalScheme.Hom X Y
+noncomputable instance : Category (BirationalCat.{u}) where
+  Hom X Y := BirationalCat.Hom X Y
   id X := ⟨RationalMap.id X.carrier⟩
-  comp f g := by
-    exact ⟨f.hom.comp g.hom⟩
-  assoc := sorry
-  id_comp := sorry
-  comp_id := sorry
+  comp f g := ⟨f.hom.comp g.hom⟩
+  assoc := by
+    simp
+  id_comp := by simp
+  comp_id := by simp
 
 end Scheme
 

@@ -125,12 +125,17 @@ instance [X.Over S] [Y.Over S] [Z.Over S] (f : X.PartialMap Y) (g : Y ⟶ Z)
 
 /-- A scheme morphism as a partial map. -/
 @[simps]
-def _root_.AlgebraicGeometry.Scheme.Hom.toPartialMap (f : X.Hom Y) :
+def _root_.AlgebraicGeometry.Scheme.Hom.toPartialMap (f : X ⟶ Y) :
     X.PartialMap Y := ⟨⊤, dense_univ, X.topIso.hom ≫ f⟩
 
--- ??
-instance (f : X ⟶ Y) [hf : IsDominant f] : IsDominant f.toPartialMap.hom :=
-  MorphismProperty.RespectsIso.precomp _ _ f hf
+lemma _root_.AlgebraicGeometry.Scheme.Hom.toPartialMap_compHom (f : X ⟶ Y) (g : Y ⟶ Z) :
+    f.toPartialMap.compHom g = (f ≫ g).toPartialMap := rfl
+
+variable (X) in
+protected abbrev id : X.PartialMap X := (𝟙 X : X ⟶ X).toPartialMap
+
+@[simp]
+lemma id_compHom (f : X ⟶ Y) : (PartialMap.id X).compHom f = f.toPartialMap := rfl
 
 instance [X.Over S] [Y.Over S] (f : X ⟶ Y) [f.IsOver S] : f.toPartialMap.IsOver S where
 
@@ -224,6 +229,13 @@ def equiv (f g : X.PartialMap Y) : Prop :=
   ∃ (W : X.Opens) (hW : Dense (W : Set X)) (hWl : W ≤ f.domain) (hWr : W ≤ g.domain),
     (f.restrict W hW hWl).hom = (g.restrict W hW hWr).hom
 
+lemma equiv_of_restrict_eq (f g : X.PartialMap Y) {W₁ W₂ : X.Opens} {hW₁ : Dense (W₁ : Set X)}
+    {hW₂ : Dense (W₂ : Set X)} {hW₁' : W₁ ≤ f.domain} {hW₂' : W₂ ≤ g.domain}
+    (H : f.restrict W₁ hW₁ hW₁' = g.restrict W₂ hW₂ hW₂') : f.equiv g := by
+  have e : W₁ = W₂ := congr($(H).domain)
+  subst e
+  exact ⟨W₁, hW₁, hW₁', hW₂', congr($(H).hom)⟩
+
 lemma equivalence_rel : Equivalence (@Scheme.PartialMap.equiv X Y) where
   refl f := ⟨f.domain, f.dense_domain, by simp⟩
   symm {f g} := by
@@ -275,6 +287,12 @@ lemma Opens.isDominant_homOfLE {U V : X.Opens} (hU : Dense (X := X) U) (hU' : U 
     IsDominant (X.homOfLE hU') :=
   have : IsDominant (X.homOfLE hU' ≫ Opens.ι _) := by simpa using Opens.isDominant_ι hU
   IsDominant.of_comp_of_isOpenImmersion (g := Opens.ι _) _
+
+-- todo: move up once isDominant_ι is put in proper place
+instance (f : X ⟶ Y) [IsDominant f] : IsDominant f.toPartialMap.hom := by
+  unfold Hom.toPartialMap
+  have := PartialMap.Opens.isDominant_ι (X := X) (U := ⊤) dense_univ
+  infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Two partial maps from reduced schemes to separated schemes are equivalent if and only if
@@ -335,6 +353,9 @@ def PartialMap.toRationalMap (f : X.PartialMap Y) : X ⤏ Y := Quotient.mk _ f
 /-- A scheme morphism as a rational map. -/
 abbrev Hom.toRationalMap (f : X.Hom Y) : X ⤏ Y := f.toPartialMap.toRationalMap
 
+variable (X) in
+abbrev RationalMap.id : X ⤏ X := (𝟙 X : X ⟶ X).toRationalMap
+
 variable (S) in
 /-- A rational map is an `S`-map if some partial map in the equivalence class is an `S`-map. -/
 class RationalMap.IsOver [X.Over S] [Y.Over S] (f : X ⤏ Y) : Prop where
@@ -372,6 +393,9 @@ def RationalMap.compHom (f : X ⤏ Y) (g : Y ⟶ Z) : X ⤏ Z := by
   simp only [PartialMap.restrict_domain, PartialMap.restrict_hom, PartialMap.compHom_domain,
     PartialMap.compHom_hom] at e ⊢
   rw [reassoc_of% e]
+
+lemma RationalMap.id_compHom (f : X ⟶ Y) :
+    (RationalMap.id X).compHom f = f.toRationalMap := rfl
 
 @[simp]
 lemma RationalMap.compHom_toRationalMap (f : X.PartialMap Y) (g : Y ⟶ Z) :

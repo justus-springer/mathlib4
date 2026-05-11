@@ -71,6 +71,7 @@ noncomputable def dominantRep (f : X ⤏ Y) [f.IsDominant] : X.PartialMap Y :=
 instance (f : X ⤏ Y) [f.IsDominant] : IsDominant f.dominantRep.hom :=
   f.exists_dominant_rep.choose_spec.1
 
+@[simp]
 lemma toRationalMap_dominantRep (f : X ⤏ Y) [f.IsDominant] : f.dominantRep.toRationalMap = f :=
   f.exists_dominant_rep.choose_spec.2
 
@@ -80,7 +81,7 @@ lemma IsDominant.of_exists_dominant_rep (f : X ⤏ Y) (g : X.PartialMap Y)
 
 end RationalMap
 
-lemma PartialMap.isDominant_toRationalMap (f : X.PartialMap Y) [IsDominant f.hom] :
+instance PartialMap.isDominant_toRationalMap (f : X.PartialMap Y) [IsDominant f.hom] :
     f.toRationalMap.IsDominant :=
   ⟨f, ‹_›, rfl⟩
 
