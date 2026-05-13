@@ -104,9 +104,9 @@ lemma comp_toPartialMap [PreirreducibleSpace X] [Nonempty Y] (f : X.PartialMap Y
     [IsDominant f.hom] (g : Y ⟶ Z) : f.comp g.toPartialMap = f.compHom g := by
   ext1
   · simp
-  · dsimp only [comp_domain, Hom.toPartialMap_domain, TopologicalSpace.Opens.map_top, comp_hom,
+  · dsimp only [comp_domain, Hom.toPartialMap_domain, comp_hom,
     Hom.toPartialMap_hom, topIso_hom, compHom_domain, compHom_hom]
-    erw [morphismRestrict_ι_assoc f.hom ⊤ g]
+    rw [morphismRestrict_ι_assoc]
     sorry
     -- todo
 

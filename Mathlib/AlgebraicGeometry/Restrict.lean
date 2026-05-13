@@ -556,6 +556,13 @@ theorem isPullback_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Open
   apply IsOpenImmersion.isPullback <;>
   simp
 
+theorem morphismRestrict_top_topIso_hom {X Y : Scheme.{u}} (f : X ⟶ Y) :
+    f ∣_ (⊤ : Y.Opens) ≫ (⊤ : Y.Opens).ι = X.homOfLE (f.preimage_top.le) ≫ (⊤ : X.Opens).ι ≫ f := by
+  rw [Scheme.homOfLE_ι_assoc, ← morphismRestrict_ι]
+
+theorem topIso_inv_morphismRestrict_top {X Y : Scheme.{u}} (f : X ⟶ Y) :
+    X.topIso.inv ≫ f ∣_ (⊤ : Y.Opens) = f ≫ Y.topIso.inv := sorry
+
 lemma isPullback_opens_inf_le {X : Scheme} {U V W : X.Opens} (hU : U ≤ W) (hV : V ≤ W) :
     IsPullback (X.homOfLE inf_le_left) (X.homOfLE inf_le_right) (X.homOfLE hU) (X.homOfLE hV) := by
   refine (isPullback_morphismRestrict (X.homOfLE hV) (W.ι ⁻¹ᵁ U)).of_iso (V.ι.isoImage _ ≪≫
