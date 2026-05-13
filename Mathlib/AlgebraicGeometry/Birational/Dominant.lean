@@ -7,10 +7,17 @@ module
 
 public import Mathlib.AlgebraicGeometry.Birational.RationalMap
 /-!
- 
+
 # Dominant rational maps
 
-TODO
+This file defines `RationalMap.IsDominant` and establishes its connection to
+`IsDominant` on the underlying partial maps.
+
+## Main definitions
+
+- `Scheme.RationalMap.IsDominant`: a rational map is dominant if some (equivalently, any)
+  representative partial map has dominant underlying morphism.
+- `Scheme.RationalMap.dominantRep`: a chosen dominant partial map representative.
 
 -/
 
@@ -28,23 +35,27 @@ namespace Scheme
 
 namespace PartialMap
 
+/-- Restricting a dominant partial map yields a dominant partial map. -/
 lemma isDominant_restrict_hom (f : X.PartialMap Y) [IsDominant f.hom] (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) : IsDominant (f.restrict U hU hU').hom := by
   dsimp only [restrict_domain, restrict_hom]
   have : IsDominant (X.homOfLE hU') := Opens.isDominant_homOfLE hU hU'
-  infer_instance
+  rwa [IsDominant.comp_iff]
 
+/-- If a restriction of `f` is dominant, then `f` is dominant. -/
 lemma isDominant_hom_of_isDominant_restrict_hom (f : X.PartialMap Y) (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) [H : IsDominant (f.restrict U hU hU').hom] :
     IsDominant f.hom :=
   IsDominant.of_comp (X.homOfLE hU') f.hom (H := H)
 
+/-- `f.hom` is dominant iff any restriction of `f` is. -/
 lemma isDominant_hom_iff_isDominant_restrict_hom (f : X.PartialMap Y) (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) :
     IsDominant f.hom ↔ IsDominant (f.restrict U hU hU').hom :=
   ⟨fun _ ↦ f.isDominant_restrict_hom U hU hU',
     fun _ ↦ f.isDominant_hom_of_isDominant_restrict_hom U hU hU'⟩
 
+/-- Dominance of the underlying morphism is invariant under equivalence of partial maps. -/
 lemma isDominant_hom_iff_of_equiv (f g : X.PartialMap Y) (h : f.equiv g) :
     IsDominant f.hom ↔ IsDominant g.hom := by
   obtain ⟨W, hW, hWl, hWr, h⟩ := h
@@ -57,6 +68,7 @@ end PartialMap
 
 namespace RationalMap
 
+/-- A rational map is dominant if it has a representative partial map with dominant morphism. -/
 @[mk_iff]
 protected class IsDominant (f : X ⤏ Y) : Prop where
   exists_dominant_rep' : ∃ g : X.PartialMap Y, IsDominant g.hom ∧ g.toRationalMap = f
@@ -65,6 +77,7 @@ lemma exists_dominant_rep (f : X ⤏ Y) [f.IsDominant] :
     ∃ g : X.PartialMap Y, IsDominant g.hom ∧ g.toRationalMap = f :=
   IsDominant.exists_dominant_rep'
 
+/-- A chosen dominant partial map representing of `f`. -/
 noncomputable def dominantRep (f : X ⤏ Y) [f.IsDominant] : X.PartialMap Y :=
   f.exists_dominant_rep.choose
 
@@ -74,10 +87,6 @@ instance (f : X ⤏ Y) [f.IsDominant] : IsDominant f.dominantRep.hom :=
 @[simp]
 lemma toRationalMap_dominantRep (f : X ⤏ Y) [f.IsDominant] : f.dominantRep.toRationalMap = f :=
   f.exists_dominant_rep.choose_spec.2
-
-lemma IsDominant.of_exists_dominant_rep (f : X ⤏ Y) (g : X.PartialMap Y)
-    [IsDominant g.hom] (hg : g.toRationalMap = f) : f.IsDominant :=
-  ⟨g, ‹_›, hg⟩
 
 end RationalMap
 
@@ -93,6 +102,10 @@ lemma PartialMap.isDominant_hom_of_toRationalMap_eq (f : X.PartialMap Y) (g : X 
 lemma PartialMap.isDominant_hom_of_isDominant_toRationalMap (f : X.PartialMap Y)
     [H : f.toRationalMap.IsDominant] : IsDominant f.hom :=
   isDominant_hom_of_toRationalMap_eq f f.toRationalMap rfl
+
+lemma PartialMap.isDominant_hom_iff_isDominant_toRationalMap (f : X.PartialMap Y) :
+    IsDominant f.hom ↔ f.toRationalMap.IsDominant :=
+  ⟨fun _ ↦ f.isDominant_toRationalMap, fun _ ↦ f.isDominant_hom_of_isDominant_toRationalMap⟩
 
 end Scheme
 
