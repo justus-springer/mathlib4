@@ -96,6 +96,20 @@ lemma comp_equiv_of_equiv (f₁ f₂ : X.PartialMap Y) [IsDominant f₁.hom] [Is
     (f₁.comp g₁).equiv (f₂.comp g₂) :=
   equivalence_rel.trans (comp_equiv_of_equiv_left _ _ hf _) (comp_equiv_of_equiv_right _ _ _ hg)
 
+lemma isDominant_comp_hom (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.PartialMap Z)
+    [IsDominant g.hom] : IsDominant (f.comp g).hom := sorry
+
+attribute [local instance] isDominant_comp_hom in
+lemma comp_assoc {X₁ X₂ X₃ Y : Scheme.{u}} [PreirreducibleSpace X₁] [IrreducibleSpace X₂]
+    [Nonempty X₃] (f₁ : X₁.PartialMap X₂) [IsDominant f₁.hom] (f₂ : X₂.PartialMap X₃)
+    [IsDominant f₂.hom] (f₃ : X₃.PartialMap Y) :
+    (f₁.comp f₂).comp f₃ = f₁.comp (f₂.comp f₃) :=  by
+  ext1
+  · simp_rw [comp_domain, comp_hom, ← Category.assoc, Hom.comp_preimage,
+      Hom.inv_preimage, ← Hom.comp_image, Hom.isoImage_hom_ι, Hom.comp_image, 
+      IsOpenImmersion.image_preimage_eq_preimage_image_of_isPullback
+        (isPullback_morphismRestrict f₁.hom f₂.domain)]
+  · sorry
 
 end
 
@@ -149,6 +163,12 @@ lemma RationalMap.id_comp [IrreducibleSpace X] (f : X ⤏ Y) [f.IsDominant] :
 
 instance [PreirreducibleSpace X] [Nonempty Y] (f : X ⤏ Y) [f.IsDominant] (g : Y ⤏ Z)
     [g.IsDominant] : (f.comp g).IsDominant := sorry
+
+lemma RationalMap.comp_assoc {X₁ X₂ X₃ Y : Scheme.{u}} [PreirreducibleSpace X₁]
+    [IrreducibleSpace X₂] [Nonempty X₃] (f₁ : X₁ ⤏ X₂) [f₁.IsDominant] (f₂ : X₂ ⤏ X₃)
+    [f₂.IsDominant] (f₃ : X₃ ⤏ Y) :
+    (f₁.comp f₂).comp f₃ = f₁.comp (f₂.comp f₃) := by
+  sorry
 
 end Scheme
 
