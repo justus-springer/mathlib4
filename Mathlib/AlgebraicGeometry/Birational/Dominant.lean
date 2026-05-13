@@ -69,7 +69,7 @@ end PartialMap
 namespace RationalMap
 
 /-- A rational map is dominant if it has a representative partial map with dominant morphism. -/
-@[mk_iff]
+@[mk_iff, stacks 0A1Z]
 protected class IsDominant (f : X ⤏ Y) : Prop where
   exists_dominant_rep' : ∃ g : X.PartialMap Y, IsDominant g.hom ∧ g.toRationalMap = f
 
@@ -110,4 +110,3 @@ lemma PartialMap.isDominant_hom_iff_isDominant_toRationalMap (f : X.PartialMap Y
 end Scheme
 
 end AlgebraicGeometry
-
