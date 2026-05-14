@@ -560,9 +560,6 @@ theorem morphismRestrict_top_topIso_hom {X Y : Scheme.{u}} (f : X ⟶ Y) :
     f ∣_ (⊤ : Y.Opens) ≫ (⊤ : Y.Opens).ι = X.homOfLE (f.preimage_top.le) ≫ (⊤ : X.Opens).ι ≫ f := by
   rw [Scheme.homOfLE_ι_assoc, ← morphismRestrict_ι]
 
-theorem topIso_inv_morphismRestrict_top {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    X.topIso.inv ≫ f ∣_ (⊤ : Y.Opens) = f ≫ Y.topIso.inv := sorry
-
 lemma isPullback_opens_inf_le {X : Scheme} {U V W : X.Opens} (hU : U ≤ W) (hV : V ≤ W) :
     IsPullback (X.homOfLE inf_le_left) (X.homOfLE inf_le_right) (X.homOfLE hU) (X.homOfLE hV) := by
   refine (isPullback_morphismRestrict (X.homOfLE hV) (W.ι ⁻¹ᵁ U)).of_iso (V.ι.isoImage _ ≪≫
@@ -602,6 +599,11 @@ theorem morphismRestrict_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (
 theorem morphismRestrict_homOfLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U V : Y.Opens) (e : U ≤ V) :
     (f ∣_ U) ≫ Y.homOfLE e = X.homOfLE (f.preimage_mono e) ≫ (f ∣_ V) := by
   simp [← cancel_mono V.ι]
+
+lemma morphismRestrict_eq_isoImage_hom_homOfLE {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f]
+    (U : Y.Opens) :
+    f ∣_ U = (f.isoImage (f ⁻¹ᵁ U)).hom ≫ Y.homOfLE (f.image_preimage_le U) := by
+  simp [← cancel_mono U.ι]
 
 instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] (U : Y.Opens) : IsIso (f ∣_ U) := by
   delta morphismRestrict; infer_instance
@@ -698,6 +700,20 @@ def morphismRestrictRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V :
       Scheme.Hom.isoImage_hom_ι_assoc,
       Scheme.Hom.isoImage_hom_ι,
       morphismRestrict_ι_assoc, morphismRestrict_ι]
+
+@[reassoc]
+lemma morphismRestrict_ι_image_ι_isoImage_inv
+    {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V : U.toScheme.Opens) :
+    f ∣_ U.ι ''ᵁ V ≫ (U.ι.isoImage V).inv = (X.homOfLE (image_morphismRestrict_preimage f U V).ge ≫
+      ((f ⁻¹ᵁ U).ι.isoImage ((f ∣_ U) ⁻¹ᵁ V)).inv) ≫ f ∣_ U ∣_ V :=
+  (morphismRestrictRestrict f U V).inv.w'
+
+@[reassoc]
+lemma morphismRestrictRestrict_ι_isoImage_hom
+    {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V : U.toScheme.Opens) :
+    f ∣_ U ∣_ V ≫ (U.ι.isoImage V).hom = (((f ⁻¹ᵁ U).ι.isoImage ((f ∣_ U) ⁻¹ᵁ V)).hom ≫
+      X.homOfLE (image_morphismRestrict_preimage f U V).le) ≫ f ∣_ U.ι ''ᵁ V :=
+  (morphismRestrictRestrict f U V).hom.w'
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Restricting a morphism twice onto a basic open set is isomorphic to one restriction. -/
