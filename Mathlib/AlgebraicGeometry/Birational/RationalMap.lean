@@ -236,19 +236,29 @@ lemma equiv_of_restrict_eq (f g : X.PartialMap Y) {W₁ W₂ : X.Opens} {hW₁ :
   subst e
   exact ⟨W₁, hW₁, hW₁', hW₂', congr($(H).hom)⟩
 
+@[refl]
+lemma equiv.refl (f : X.PartialMap Y) : f.equiv f :=
+  ⟨f.domain, f.dense_domain, by simp⟩
+
+@[symm]
+lemma equiv.symm {f g : X.PartialMap Y} : f.equiv g → g.equiv f := by
+  intro ⟨W, hW, hWl, hWr, e⟩
+  exact ⟨W, hW, hWr, hWl, e.symm⟩
+
+@[trans]
+lemma equiv.trans {f g h : X.PartialMap Y} : f.equiv g → g.equiv h → f.equiv h := by
+  intro ⟨W₁, hW₁, hW₁l, hW₁r, e₁⟩ ⟨W₂, hW₂, hW₂l, hW₂r, e₂⟩
+  refine ⟨W₁ ⊓ W₂, hW₁.inter_of_isOpen_left hW₂ W₁.2, inf_le_left.trans hW₁l,
+    inf_le_right.trans hW₂r, ?_⟩
+  dsimp at e₁ e₂
+  simp only [restrict_domain, restrict_hom, ← X.homOfLE_homOfLE (U := W₁ ⊓ W₂) inf_le_left hW₁l,
+    Category.assoc, e₁, ← X.homOfLE_homOfLE (U := W₁ ⊓ W₂) inf_le_right hW₂r, ← e₂]
+  simp only [homOfLE_homOfLE_assoc]
+
 lemma equivalence_rel : Equivalence (@Scheme.PartialMap.equiv X Y) where
-  refl f := ⟨f.domain, f.dense_domain, by simp⟩
-  symm {f g} := by
-    intro ⟨W, hW, hWl, hWr, e⟩
-    exact ⟨W, hW, hWr, hWl, e.symm⟩
-  trans {f g h} := by
-    intro ⟨W₁, hW₁, hW₁l, hW₁r, e₁⟩ ⟨W₂, hW₂, hW₂l, hW₂r, e₂⟩
-    refine ⟨W₁ ⊓ W₂, hW₁.inter_of_isOpen_left hW₂ W₁.2, inf_le_left.trans hW₁l,
-      inf_le_right.trans hW₂r, ?_⟩
-    dsimp at e₁ e₂
-    simp only [restrict_domain, restrict_hom, ← X.homOfLE_homOfLE (U := W₁ ⊓ W₂) inf_le_left hW₁l,
-      Category.assoc, e₁, ← X.homOfLE_homOfLE (U := W₁ ⊓ W₂) inf_le_right hW₂r, ← e₂]
-    simp only [homOfLE_homOfLE_assoc]
+  refl := equiv.refl
+  symm := equiv.symm
+  trans := equiv.trans
 
 instance : Setoid (X.PartialMap Y) := ⟨@PartialMap.equiv X Y, equivalence_rel⟩
 
