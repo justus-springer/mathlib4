@@ -43,11 +43,6 @@ variable [PreirreducibleSpace X] [Nonempty Y]
 
 namespace PartialMap
 
-theorem _root_.Set.nonempty_preimage_iff {α β} {s : Set β} {f : α → β} :
-    (f ⁻¹' s).Nonempty ↔ (s ∩ Set.range f).Nonempty := by
-  rw [Set.inter_comm]
-  simpa using (Set.image_inter_nonempty_iff (s := Set.univ)).symm
-
 /-- Composition of partial maps. The domain of `f.comp g` is the preimage of `g.domain` under `f`,
 viewed as an open subscheme of `X`. Requires `f.hom` to be dominant so that the domain is dense. -/
 @[simps]
@@ -83,6 +78,7 @@ lemma comp_restrict_right (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.Partial
       Category.id_comp, ← f.domain.ι.isoImage_inv_homOfLE_assoc _ _ (f.hom.preimage_mono hV'),
       ← morphismRestrict_homOfLE_assoc f.hom _ _ hV']
 
+/-- Composition respects equivalence of partial maps on the left. -/
 lemma comp_equiv_of_equiv_left {f₁ f₂ : X.PartialMap Y} [IsDominant f₁.hom] [IsDominant f₂.hom]
     (h : f₁.equiv f₂) (g : Y.PartialMap Z) :
     (f₁.comp g).equiv (f₂.comp g) := by
@@ -93,6 +89,7 @@ lemma comp_equiv_of_equiv_left {f₁ f₂ : X.PartialMap Y} [IsDominant f₁.hom
   rw [comp_restrict_left, comp_restrict_left] at e
   exact equiv_of_restrict_eq _ _ e
 
+/-- Composition respects equivalence of partial maps on the right. -/
 lemma comp_equiv_of_equiv_right (f : X.PartialMap Y) [IsDominant f.hom] {g₁ g₂ : Y.PartialMap Z}
     (h : g₁.equiv g₂) : (f.comp g₁).equiv (f.comp g₂) := by
   obtain ⟨W, hW, hW₁, hW₂, e⟩ := h
@@ -102,6 +99,7 @@ lemma comp_equiv_of_equiv_right (f : X.PartialMap Y) [IsDominant f.hom] {g₁ g�
   rw [comp_restrict_right, comp_restrict_right] at e
   exact equiv_of_restrict_eq _ _ e
 
+/-- Composition respects equivalence of partial maps in both arguments. -/
 lemma comp_equiv_of_equiv (f₁ f₂ : X.PartialMap Y) [IsDominant f₁.hom] [IsDominant f₂.hom]
     (hf : f₁.equiv f₂) (g₁ g₂ : Y.PartialMap Z) (hg : g₁.equiv g₂) :
     (f₁.comp g₁).equiv (f₂.comp g₂) :=
@@ -113,33 +111,20 @@ instance isDominant_comp_hom (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.Part
   have := IsZariskiLocalAtTarget.restrict ‹IsDominant f.hom› g.domain
   infer_instance
 
-private lemma comp_assoc_aux₁
-    {X Y : Scheme} (D : Opens X) (f : D.toScheme ⟶ Y) (V : Opens Y) (U : Opens V) :
-    (D.ι ''ᵁ f ⁻¹ᵁ V).ι ''ᵁ (D.ι.isoImage (f ⁻¹ᵁ V)).inv ⁻¹ᵁ (f ∣_ V) ⁻¹ᵁ U =
-      D.ι ''ᵁ f ⁻¹ᵁ V.ι ''ᵁ U := by
-  simp_rw [Hom.inv_preimage, ← Hom.comp_image, Hom.isoImage_hom_ι, Hom.comp_image, 
-    image_morphismRestrict_preimage]
-
-@[reassoc]
-private lemma comp_assoc_aux₂
-    {X Y : Scheme} (D : Opens X) (f : D.toScheme ⟶ Y) (V : Opens Y) (U : Opens V) :
-    ((D.ι ''ᵁ f ⁻¹ᵁ V).ι.isoImage ((D.ι.isoImage (f ⁻¹ᵁ V)).inv ⁻¹ᵁ ((f ∣_ V) ⁻¹ᵁ U))).inv ≫
-      (D.ι.isoImage (f ⁻¹ᵁ V)).inv ∣_ ((f ∣_ V) ⁻¹ᵁ U) =
-      X.homOfLE (comp_assoc_aux₁ D f V U).le ≫ (D.ι.isoImage (f ⁻¹ᵁ V.ι ''ᵁ U)).inv ≫
-        D.toScheme.homOfLE (image_morphismRestrict_preimage f V U).ge ≫
-        ((f ⁻¹ᵁ V).ι.isoImage ((f ∣_ V) ⁻¹ᵁ U)).inv := by
-  simp [← cancel_mono ((f ∣_ V) ⁻¹ᵁ U).ι, ← cancel_mono (f ⁻¹ᵁ V).ι]
-
 lemma comp_assoc {X₁ X₂ X₃ Y : Scheme.{u}} [PreirreducibleSpace X₁] [IrreducibleSpace X₂]
     [Nonempty X₃] (f : X₁.PartialMap X₂) [IsDominant f.hom] (g : X₂.PartialMap X₃)
     [IsDominant g.hom] (h : X₃.PartialMap Y) :
-    (f.comp g).comp h = f.comp (g.comp h) :=  by
+    (f.comp g).comp h = f.comp (g.comp h) := by
   ext1
-  · simp_rw [comp_domain, comp_hom, ← Category.assoc, Hom.comp_preimage, comp_assoc_aux₁]
+  · simp_rw [comp_domain, comp_hom, ← Category.assoc, Hom.comp_preimage, Hom.inv_preimage,
+      ← Hom.comp_image, Hom.isoImage_hom_ι, Hom.comp_image, image_morphismRestrict_preimage]
   · simp_rw [comp_hom, comp_domain, morphismRestrict_comp,
       morphismRestrict_ι_image_ι_isoImage_inv_assoc, isoOfEq_hom, comp_hom, Hom.comp_preimage,
-      ← comp_assoc_aux₂_assoc]
-    rfl
+      Category.assoc]
+    conv_lhs => rw [← Category.assoc]
+    conv_rhs => rw [← Category.assoc, ← Category.assoc, ← Category.assoc]
+    congr 1
+    simp [← cancel_mono (Opens.ι _)]
 
 lemma comp_toPartialMap (f : X.PartialMap Y) [IsDominant f.hom] (g : Y ⟶ Z) :
     f.comp g.toPartialMap = f.compHom g := by
