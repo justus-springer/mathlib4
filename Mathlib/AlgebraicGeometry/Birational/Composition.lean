@@ -19,6 +19,12 @@ This file defines composition for partial maps and rational maps between schemes
   of `g`'s domain under `f`.
 - `Scheme.RationalMap.comp`: composition of rational maps, defined via a dominant representative.
 
+## Main statements
+
+- `Scheme.PartialMap.comp_equiv_of_equiv`: Composition respects equivalence of partial maps.
+- `Scheme.PartialMap.comp_assoc`: Composition of partial maps is associative.
+- `Scheme.RationalMap.comp_assoc`: Composition of rational maps is associative.
+
 -/
 
 @[expose] public section
@@ -108,26 +114,28 @@ instance isDominant_comp_hom (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.Part
   infer_instance
 
 lemma comp_assoc {X₁ X₂ X₃ Y : Scheme.{u}} [PreirreducibleSpace X₁] [IrreducibleSpace X₂]
-    [Nonempty X₃] (f₁ : X₁.PartialMap X₂) [IsDominant f₁.hom] (f₂ : X₂.PartialMap X₃)
-    [IsDominant f₂.hom] (f₃ : X₃.PartialMap Y) :
-    (f₁.comp f₂).comp f₃ = f₁.comp (f₂.comp f₃) :=  by
+    [Nonempty X₃] (f : X₁.PartialMap X₂) [IsDominant f.hom] (g : X₂.PartialMap X₃)
+    [IsDominant g.hom] (h : X₃.PartialMap Y) :
+    (f.comp g).comp h = f.comp (g.comp h) :=  by
   ext1
   · simp_rw [comp_domain, comp_hom, ← Category.assoc, Hom.comp_preimage,
       Hom.inv_preimage, ← Hom.comp_image, Hom.isoImage_hom_ι, Hom.comp_image, 
       image_morphismRestrict_preimage]
   · simp_rw [comp_hom, comp_domain, morphismRestrict_comp]
     rw [morphismRestrict_ι_image_ι_isoImage_inv_assoc]
+    simp only [← Category.assoc]
+    congr 1
+    simp only [Category.assoc]
     -- todo...
     sorry
 
-lemma comp_toPartialMap (f : X.PartialMap Y)
-    [IsDominant f.hom] (g : Y ⟶ Z) : f.comp g.toPartialMap = f.compHom g := by
+lemma comp_toPartialMap (f : X.PartialMap Y) [IsDominant f.hom] (g : Y ⟶ Z) :
+    f.comp g.toPartialMap = f.compHom g := by
   ext1
   · simp
   · simp_rw [comp_hom, Hom.toPartialMap_domain, Hom.toPartialMap_hom, compHom_hom, topIso_hom,
-      morphismRestrict_ι_assoc]
-    sorry
-    -- todo
+      morphismRestrict_ι_assoc, f.domain.ι_isoImage_inv_ι_assoc, isoOfEq_hom]
+    rfl
 
 @[simp]
 lemma comp_id (f : X.PartialMap Y) [IsDominant f.hom] :
@@ -138,8 +146,8 @@ end PartialMap
 
 namespace RationalMap
 
-/-- Composition of rational maps. Requires `f` to be dominant so that a representative can be
-chosen and the result is independent of the choice of representative for `g`. -/
+/-- Composition of rational maps. Requires `f` to be dominant, so that we may choose
+a dominant representative. -/
 noncomputable def comp (f : X ⤏ Y) [f.IsDominant] (g : Y ⤏ Z) : X ⤏ Z :=
   Quotient.liftOn g (PartialMap.toRationalMap ∘ f.dominantRep.comp) <| fun _ _ h ↦ by
     rw [Function.comp_apply, Function.comp_apply, PartialMap.toRationalMap_eq_iff]
@@ -170,7 +178,7 @@ lemma comp_assoc {X₁ X₂ X₃ Y : Scheme.{u}} [PreirreducibleSpace X₁] [Irr
   obtain ⟨f₂', rfl⟩ := f₂.exists_rep
   simp_rw [comp_def, ← PartialMap.comp_assoc, PartialMap.toRationalMap_eq_iff]
   apply PartialMap.comp_equiv_of_equiv_left
-  have := PartialMap.isDominant_hom_of_isDominant_toRationalMap f₂'
+  have := f₂'.isDominant_hom_of_isDominant_toRationalMap
   apply (f₁.dominantRep.comp f₂').toRationalMap_dominantRep_equiv.trans
   apply PartialMap.comp_equiv_of_equiv_right
   exact f₂'.toRationalMap_dominantRep_equiv.symm
@@ -194,6 +202,6 @@ lemma PartialMap.id_comp {X Y : Scheme.{u}} [IrreducibleSpace X] (f : X.PartialM
 @[simp]
 lemma RationalMap.id_comp {X Y : Scheme.{u}} [IrreducibleSpace X] (f : X ⤏ Y) [f.IsDominant] :
     (RationalMap.id X).comp f = f := by
-  rw [← f.toRationalMap_dominantRep, RationalMap.toRationalMap_comp, PartialMap.id_comp]
+  rw [← f.toRationalMap_dominantRep, toRationalMap_comp, PartialMap.id_comp]
 
 end AlgebraicGeometry.Scheme

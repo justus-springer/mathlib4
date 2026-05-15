@@ -394,6 +394,11 @@ lemma Scheme.Hom.isoImage_inv_homOfLE
     (f.isoImage U).inv ≫ X.homOfLE e = Y.homOfLE (f.image_mono e) ≫ (f.isoImage V).inv := by
   simp [← cancel_mono (f.isoImage V).hom, ← f.isoImage_hom_homOfLE]
 
+@[reassoc (attr := simp)]
+lemma Scheme.Opens.ι_isoImage_inv_ι {X : Scheme.{u}} (U : Opens X) (V : Opens U) :
+    (U.ι.isoImage V).inv ≫ V.ι = X.homOfLE (U.ι_image_le V) := by
+  simp [← cancel_mono U.ι]
+
 /-- If `f : X ⟶ Y` is an open immersion, then `X` is isomorphic to its image in `Y`. -/
 def Scheme.Hom.isoOpensRange {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
     X ≅ f.opensRange :=
