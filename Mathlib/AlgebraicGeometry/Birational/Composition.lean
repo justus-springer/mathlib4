@@ -69,8 +69,8 @@ lemma comp_restrict_right (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.Partial
     (V : Y.Opens) (hV : Dense (V : Set Y)) (hV' : V ≤ g.domain) :
     f.comp (g.restrict V hV hV') = (f.comp g).restrict
       (f.domain.ι ''ᵁ (f.hom ⁻¹ᵁ V)) ((f.domain.ι ''ᵁ f.hom ⁻¹ᵁ V).2.dense <| by
-          simpa [← Set.nonempty_preimage_iff] using
-            f.hom.denseRange.inter_open_nonempty _ V.2 hV.nonempty)
+        simpa [← Set.nonempty_preimage_iff] using
+          f.hom.denseRange.inter_open_nonempty _ V.2 hV.nonempty)
       (f.domain.ι.image_mono (f.hom.preimage_mono hV')) := by
   ext1
   · rfl
