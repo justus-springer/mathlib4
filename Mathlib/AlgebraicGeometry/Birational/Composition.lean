@@ -113,21 +113,33 @@ instance isDominant_comp_hom (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.Part
   have := IsZariskiLocalAtTarget.restrict ‹IsDominant f.hom› g.domain
   infer_instance
 
+private lemma comp_assoc_aux₁
+    {X Y : Scheme} (D : Opens X) (f : D.toScheme ⟶ Y) (V : Opens Y) (U : Opens V) :
+    (D.ι ''ᵁ f ⁻¹ᵁ V).ι ''ᵁ (D.ι.isoImage (f ⁻¹ᵁ V)).inv ⁻¹ᵁ (f ∣_ V) ⁻¹ᵁ U =
+      D.ι ''ᵁ f ⁻¹ᵁ V.ι ''ᵁ U := by
+  simp_rw [Hom.inv_preimage, ← Hom.comp_image, Hom.isoImage_hom_ι, Hom.comp_image, 
+    image_morphismRestrict_preimage]
+
+@[reassoc]
+private lemma comp_assoc_aux₂
+    {X Y : Scheme} (D : Opens X) (f : D.toScheme ⟶ Y) (V : Opens Y) (U : Opens V) :
+    ((D.ι ''ᵁ f ⁻¹ᵁ V).ι.isoImage ((D.ι.isoImage (f ⁻¹ᵁ V)).inv ⁻¹ᵁ ((f ∣_ V) ⁻¹ᵁ U))).inv ≫
+      (D.ι.isoImage (f ⁻¹ᵁ V)).inv ∣_ ((f ∣_ V) ⁻¹ᵁ U) =
+      X.homOfLE (comp_assoc_aux₁ D f V U).le ≫ (D.ι.isoImage (f ⁻¹ᵁ V.ι ''ᵁ U)).inv ≫
+        D.toScheme.homOfLE (image_morphismRestrict_preimage f V U).ge ≫
+        ((f ⁻¹ᵁ V).ι.isoImage ((f ∣_ V) ⁻¹ᵁ U)).inv := by
+  simp [← cancel_mono ((f ∣_ V) ⁻¹ᵁ U).ι, ← cancel_mono (f ⁻¹ᵁ V).ι]
+
 lemma comp_assoc {X₁ X₂ X₃ Y : Scheme.{u}} [PreirreducibleSpace X₁] [IrreducibleSpace X₂]
     [Nonempty X₃] (f : X₁.PartialMap X₂) [IsDominant f.hom] (g : X₂.PartialMap X₃)
     [IsDominant g.hom] (h : X₃.PartialMap Y) :
     (f.comp g).comp h = f.comp (g.comp h) :=  by
   ext1
-  · simp_rw [comp_domain, comp_hom, ← Category.assoc, Hom.comp_preimage,
-      Hom.inv_preimage, ← Hom.comp_image, Hom.isoImage_hom_ι, Hom.comp_image, 
-      image_morphismRestrict_preimage]
-  · simp_rw [comp_hom, comp_domain, morphismRestrict_comp]
-    rw [morphismRestrict_ι_image_ι_isoImage_inv_assoc]
-    simp only [← Category.assoc]
-    congr 1
-    simp only [Category.assoc]
-    -- todo...
-    sorry
+  · simp_rw [comp_domain, comp_hom, ← Category.assoc, Hom.comp_preimage, comp_assoc_aux₁]
+  · simp_rw [comp_hom, comp_domain, morphismRestrict_comp,
+      morphismRestrict_ι_image_ι_isoImage_inv_assoc, isoOfEq_hom, comp_hom, Hom.comp_preimage,
+      ← comp_assoc_aux₂_assoc]
+    rfl
 
 lemma comp_toPartialMap (f : X.PartialMap Y) [IsDominant f.hom] (g : Y ⟶ Z) :
     f.comp g.toPartialMap = f.compHom g := by
