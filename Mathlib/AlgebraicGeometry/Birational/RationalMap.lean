@@ -128,6 +128,11 @@ instance [X.Over S] [Y.Over S] [Z.Over S] (f : X.PartialMap Y) (g : Y ⟶ Z)
 def _root_.AlgebraicGeometry.Scheme.Hom.toPartialMap (f : X ⟶ Y) :
     X.PartialMap Y := ⟨⊤, dense_univ, X.topIso.hom ≫ f⟩
 
+instance (f : X ⟶ Y) [IsDominant f] : IsDominant f.toPartialMap.hom := by
+  dsimp
+  have := Opens.isDominant_ι (X := X) (U := ⊤) dense_univ
+  infer_instance
+
 lemma _root_.AlgebraicGeometry.Scheme.Hom.toPartialMap_compHom (f : X ⟶ Y) (g : Y ⟶ Z) :
     f.toPartialMap.compHom g = (f ≫ g).toPartialMap := rfl
 
@@ -289,20 +294,6 @@ lemma equiv_of_fromSpecStalkOfMem_eq [IrreducibleSpace X]
       ← g.fromSpecStalkOfMem_restrict hdense inf_le_right ⟨hxf, hxg⟩] at H
     simpa only [fromSpecStalkOfMem, restrict_domain, Opens.fromSpecStalkOfMem, Spec.map_inv,
       restrict_hom, Category.assoc, IsIso.eq_inv_comp, IsIso.hom_inv_id_assoc] using H
-
-lemma Opens.isDominant_ι {U : X.Opens} (hU : Dense (X := X) U) : IsDominant U.ι :=
-  ⟨by simpa [DenseRange] using hU⟩
-
-lemma Opens.isDominant_homOfLE {U V : X.Opens} (hU : Dense (X := X) U) (hU' : U ≤ V) :
-    IsDominant (X.homOfLE hU') :=
-  have : IsDominant (X.homOfLE hU' ≫ Opens.ι _) := by simpa using Opens.isDominant_ι hU
-  IsDominant.of_comp_of_isOpenImmersion (g := Opens.ι _) _
-
--- todo: move up once isDominant_ι is put in proper place
-instance (f : X ⟶ Y) [IsDominant f] : IsDominant f.toPartialMap.hom := by
-  unfold Hom.toPartialMap
-  have := PartialMap.Opens.isDominant_ι (X := X) (U := ⊤) dense_univ
-  infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Two partial maps from reduced schemes to separated schemes are equivalent if and only if
