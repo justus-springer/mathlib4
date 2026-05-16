@@ -37,8 +37,6 @@ def PartialIso.toBirationalMap {X Y : Scheme.{u}} [IrreducibleSpace X] [Irreduci
     (f : X.PartialIso Y) : X.BirationalMap Y where
   hom := f.toRationalMap
 
-
-
 end Scheme
 
 end AlgebraicGeometry
