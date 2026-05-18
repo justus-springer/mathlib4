@@ -165,9 +165,9 @@ def toPartialMap (f : X.PartialIso Y) : X.PartialMap Y where
   dense_domain := f.dense_source
   hom := f.iso.hom ≫ f.target.ι
 
-lemma isDominant_toPartialMap_hom (f : X.PartialIso Y) : IsDominant f.toPartialMap.hom := by
+instance isDominant_toPartialMap_hom (f : X.PartialIso Y) : IsDominant f.toPartialMap.hom := by
   dsimp only [toPartialMap_domain, toPartialMap_hom]
-  have := PartialMap.Opens.isDominant_ι f.dense_target
+  have := Opens.isDominant_ι f.dense_target
   infer_instance
 
 /-- The underlying rational map of a partial isomorphism. -/

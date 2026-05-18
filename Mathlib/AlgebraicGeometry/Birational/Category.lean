@@ -6,8 +6,9 @@ Authors: Justus Springer
 module
 
 public import Mathlib.AlgebraicGeometry.Birational.Composition
-/-!
+public import Mathlib.AlgebraicGeometry.Birational.BirationalMap
 
+/-!
 # The category of irreducible schemes with dominant rational maps
 
 ## TODO
@@ -16,7 +17,7 @@ public import Mathlib.AlgebraicGeometry.Birational.Composition
 
 @[expose] public section
 
-universe u
+universe u v
 
 open CategoryTheory
 
@@ -26,15 +27,25 @@ variable {X Y Z : Scheme.{u}}
 
 namespace Scheme
 
+@[ext]
 structure BirationalCat where
-  private mk ::
   carrier : Scheme.{u}
   [isIrreducible : IrreducibleSpace carrier]
 
 attribute [instance] BirationalCat.isIrreducible
 
+instance : Coe BirationalCat.{u} Scheme.{u} where
+  coe := BirationalCat.carrier
+
+def toBirationalCat (X : Scheme.{u}) [IrreducibleSpace X] : BirationalCat.{u} := ⟨X⟩
+
+@[simp]
+lemma toBirationalCat_coe (X : Scheme.{u}) [IrreducibleSpace X] :
+    X.toBirationalCat.carrier = X := rfl
+
+@[ext]
 structure BirationalCat.Hom (X Y : BirationalCat.{u}) where
-  hom : X.carrier ⤏ Y.carrier
+  hom : X ⤏ Y
   [isDominant : hom.IsDominant]
 
 attribute [instance] BirationalCat.Hom.isDominant
@@ -43,10 +54,18 @@ noncomputable instance : Category (BirationalCat.{u}) where
   Hom X Y := BirationalCat.Hom X Y
   id X := ⟨RationalMap.id X.carrier⟩
   comp f g := ⟨f.hom.comp g.hom⟩
-  assoc := by
-    simp
-  id_comp := by simp
-  comp_id := by simp
+  assoc f g h := by ext; exact f.hom.comp_assoc g.hom h.hom
+  id_comp f := by ext; exact f.hom.id_comp
+  comp_id f := by ext; exact f.hom.comp_id
+
+set_option backward.isDefEq.respectTransparency false in
+def RationalMap.toBirationalCatHom
+    {X Y : Scheme.{u}} [IrreducibleSpace X] [IrreducibleSpace Y] (f : X ⤏ Y) [f.IsDominant] :
+    X.toBirationalCat ⟶ Y.toBirationalCat :=
+  ⟨f⟩
+
+-- TODO
+def BirationalCat.equivIso (X Y : BirationalCat.{u}) : (X ≅ Y) ≃ BirationalMap X Y := sorry
 
 end Scheme
 

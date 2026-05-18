@@ -33,9 +33,22 @@ structure BirationalMap (X Y : Scheme.{u}) [IrreducibleSpace X] [IrreducibleSpac
   hom_comp_inv_id : hom.comp inv = .id X
   inv_comp_hom_id : inv.comp hom = .id Y
 
+variable {X Y : Scheme.{u}} [IrreducibleSpace X] [IrreducibleSpace Y]
+
+#check Hom.stalkMap_congr_point
+#check Hom.stalkMap
 def PartialIso.toBirationalMap {X Y : Scheme.{u}} [IrreducibleSpace X] [IrreducibleSpace Y]
     (f : X.PartialIso Y) : X.BirationalMap Y where
   hom := f.toRationalMap
+  inv := f.symm.toRationalMap 
+  hom_comp_inv_id := by
+    rw [RationalMap.toRationalMap_comp, PartialMap.toRationalMap_eq_iff]
+    refine ⟨f.source, f.dense_source, by simp, by simp, ?_⟩
+    sorry
+  inv_comp_hom_id := by
+    rw [RationalMap.toRationalMap_comp, PartialMap.toRationalMap_eq_iff]
+    refine ⟨f.target, f.dense_target, by simp; sorry, by simp, ?_⟩
+    sorry
 
 end Scheme
 
