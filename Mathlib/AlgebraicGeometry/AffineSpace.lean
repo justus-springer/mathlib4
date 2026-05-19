@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.Algebra.MvPolynomial.Nilpotent
 public import Mathlib.Algebra.MvPolynomial.Monad
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
@@ -446,6 +447,17 @@ example (R : CommRingCat) :
   aesop (add simp spec_le_iff)
 
 end instances
+
+instance [h : IsReduced S] : IsReduced 𝔸(n; S) := by
+  wlog hS : ∃ R, S = Spec R
+  · sorry
+  /- obtain ⟨R, rfl⟩ := hS -/
+  /- rw [affine_isReduced_iff] at h -/
+  /- have : _root_.IsReduced (MvPolynomial n R) := inferInstance -/
+  /- have foo := affine_isReduced_iff (.of (MvPolynomial n R)) -/
+  /- dsimp at foo -/
+  /- rw [← foo] at this -/
+  /- exact isReduced_of_isOpenImmersion (SpecIso n R).hom -/
 
 end AffineSpace
 
