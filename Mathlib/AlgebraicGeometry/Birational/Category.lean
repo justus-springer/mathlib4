@@ -67,6 +67,9 @@ def RationalMap.toBirationalCatHom
 -- TODO
 def BirationalCat.equivIso (X Y : BirationalCat.{u}) : (X ≅ Y) ≃ BirationalMap X Y := sorry
 
+abbrev Cremona (n : Type v) (S : Scheme.{max u v}) [IrreducibleSpace S] :=
+  Aut (𝔸(n; S).toBirationalCat)
+
 end Scheme
 
 end AlgebraicGeometry
