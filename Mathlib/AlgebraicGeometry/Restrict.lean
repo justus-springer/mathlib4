@@ -397,11 +397,7 @@ lemma Scheme.Hom.isoImage_inv_homOfLE
   simp [← cancel_mono (f.isoImage V).hom, ← f.isoImage_hom_homOfLE]
 
 @[reassoc (attr := simp)]
-<<<<<<< HEAD
-lemma Scheme.Opens.ι_isoImage_inv_ι {X : Scheme.{u}} (U : Opens X) (V : Opens U) :
-=======
 lemma Scheme.Opens.isoImage_ι_inv_ι {X : Scheme.{u}} (U : Opens X) (V : Opens U) :
->>>>>>> justus/AffineSpace_isIntegral
     (U.ι.isoImage V).inv ≫ V.ι = X.homOfLE (U.ι_image_le V) := by
   simp [← cancel_mono U.ι]
 
@@ -607,16 +603,10 @@ theorem morphismRestrict_homOfLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U V : Y.Opens
     (f ∣_ U) ≫ Y.homOfLE e = X.homOfLE (f.preimage_mono e) ≫ (f ∣_ V) := by
   simp [← cancel_mono V.ι]
 
-<<<<<<< HEAD
-lemma morphismRestrict_eq_isoImage_hom_homOfLE {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f]
-    (U : Y.Opens) :
-    f ∣_ U = (f.isoImage (f ⁻¹ᵁ U)).hom ≫ Y.homOfLE (f.image_preimage_le U) := by
-=======
 @[reassoc (attr := simp)]
 lemma Scheme.Hom.isoImage_preimage_hom_homOfLE {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f]
     (U : Y.Opens) :
     (f.isoImage (f ⁻¹ᵁ U)).hom ≫ Y.homOfLE (f.image_preimage_le U) = f ∣_ U := by
->>>>>>> justus/AffineSpace_isIntegral
   simp [← cancel_mono U.ι]
 
 instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] (U : Y.Opens) : IsIso (f ∣_ U) := by
@@ -664,7 +654,6 @@ theorem morphismRestrict_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V
   rw [Scheme.Hom.appLE, morphismRestrict_app', Scheme.Opens.toScheme_presheaf_map,
     Scheme.Hom.appLE_map]
 
-<<<<<<< HEAD
 @[reassoc]
 theorem morphismRestrict_homOfLE_ι_isoImage_hom
     {X : Scheme.{u}} {U V : X.Opens} (e : U ≤ V) (W : Opens V) :
@@ -679,9 +668,7 @@ theorem ι_isoImage_inv_morphismRestrict_homOfLE {X : Scheme.{u}} {U V : X.Opens
       X.homOfLE (X.ι_image_homOfLE_le_ι_image e W) ≫ (V.ι.isoImage W).inv := by
   simp [← cancel_mono (V.ι.isoImage W).hom, morphismRestrict_homOfLE_ι_isoImage_hom]
 
-=======
 set_option backward.defeqAttrib.useBackward true in
->>>>>>> justus/AffineSpace_isIntegral
 set_option backward.isDefEq.respectTransparency false in
 /-- Restricting a morphism onto the image of an open immersion is isomorphic to the base change
 along the immersion. -/
