@@ -21,11 +21,9 @@ universe u v
 
 open CategoryTheory
 
-namespace AlgebraicGeometry
+namespace AlgebraicGeometry.Scheme
 
 variable {X Y Z : Scheme.{u}}
-
-namespace Scheme
 
 @[ext]
 structure BirationalCat where

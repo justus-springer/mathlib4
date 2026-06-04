@@ -109,8 +109,12 @@ lemma PartialIso.toPartialMap_comp_symm (f : X.PartialIso Y) :
     f.toPartialMap.comp f.symm.toPartialMap =
       (PartialMap.id X).restrict f.source f.dense_source le_top := by
   ext1
-  · sorry
-  · sorry
+  · change f.source.ι ''ᵁ (f.iso.hom ≫ f.target.ι) ⁻¹ᵁ f.target = f.source
+    rw [Hom.comp_preimage, Opens.ι_preimage_self, Hom.preimage_top, Opens.ι_image_top]
+  · rw [PartialMap.comp_hom]
+    simp_rw [toPartialMap_hom]
+    simp
+    sorry
 
 lemma PartialIso.symm_toPartialMap_comp (f : X.PartialIso Y) :
     f.symm.toPartialMap.comp f.toPartialMap =
@@ -132,6 +136,9 @@ def PartialIso.toBirationalMap (f : X.PartialIso Y) : X.BirationalMap Y where
     apply PartialMap.restrict_equiv
 
 def BirationalMap.toPartialIso (f : X.BirationalMap Y) : X.PartialIso Y := sorry
+
+lemma BirationalMap.birational (f : X.BirationalMap Y) : X.Birational Y :=
+  ⟨f.toPartialIso⟩
 
 end Scheme
 
