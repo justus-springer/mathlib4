@@ -117,6 +117,7 @@ instance isDominant_comp_hom (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.Part
   infer_instance
 
 set_option backward.defeqAttrib.useBackward true in
+@[grind _=_]
 lemma comp_assoc {X₁ X₂ X₃ Y : Scheme.{u}} [PreirreducibleSpace X₁] [IrreducibleSpace X₂]
     [Nonempty X₃] (f : X₁.PartialMap X₂) [IsDominant f.hom] (g : X₂.PartialMap X₃)
     [IsDominant g.hom] (h : X₃.PartialMap Y) :
@@ -142,7 +143,7 @@ lemma comp_toPartialMap (f : X.PartialMap Y) [IsDominant f.hom] (g : Y ⟶ Z) :
     rfl
 
 set_option backward.defeqAttrib.useBackward true in
-@[simp]
+@[simp, grind =]
 lemma comp_id (f : X.PartialMap Y) [IsDominant f.hom] :
     f.comp (PartialMap.id Y) = f := by
   rw [comp_toPartialMap, compHom_id]
@@ -167,7 +168,7 @@ lemma toRationalMap_comp (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.PartialM
   rw [RationalMap.comp_def, PartialMap.toRationalMap_eq_iff]
   exact PartialMap.comp_equiv_of_equiv_left f.representative_toRationalMap_equiv _
 
-@[simp]
+@[simp, grind =]
 lemma comp_id (f : X ⤏ Y) [f.IsDominant] : f.comp (RationalMap.id Y) = f := by
   simp [RationalMap.comp_def]
 
@@ -175,6 +176,7 @@ instance (f : X ⤏ Y) [f.IsDominant] (g : Y ⤏ Z) [g.IsDominant] : (f.comp g).
   rw [← g.toRationalMap_representative, RationalMap.comp_def]
   infer_instance
 
+@[grind _=_]
 lemma comp_assoc {X₁ X₂ X₃ Y : Scheme.{u}} [PreirreducibleSpace X₁] [IrreducibleSpace X₂]
     [Nonempty X₃] (f₁ : X₁ ⤏ X₂) [f₁.IsDominant] (f₂ : X₂ ⤏ X₃) [f₂.IsDominant] (f₃ : X₃ ⤏ Y) :
     (f₁.comp f₂).comp f₃ = f₁.comp (f₂.comp f₃) := by
@@ -191,7 +193,7 @@ end RationalMap
 end PreirreducibleSpace
 
 set_option backward.defeqAttrib.useBackward true in
-@[simp]
+@[simp, grind =]
 lemma PartialMap.id_comp {X Y : Scheme.{u}} [IrreducibleSpace X] (f : X.PartialMap Y) :
     (PartialMap.id X).comp f = f := by
   ext1
@@ -203,7 +205,7 @@ lemma PartialMap.id_comp {X Y : Scheme.{u}} [IrreducibleSpace X] (f : X.PartialM
       Iso.inv_hom_id_assoc]
     rfl
 
-@[simp]
+@[simp, grind =]
 lemma RationalMap.id_comp {X Y : Scheme.{u}} [IrreducibleSpace X] (f : X ⤏ Y) [f.IsDominant] :
     (RationalMap.id X).comp f = f := by
   rw [← f.toRationalMap_representative, toRationalMap_comp, PartialMap.id_comp]
