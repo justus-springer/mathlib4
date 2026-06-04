@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Nilpotent
 public import Mathlib.Algebra.MvPolynomial.Monad
-public import Mathlib.Algebra.MvPolynomial.Nilpotent
 public import Mathlib.AlgebraicGeometry.Geometrically.Integral
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 

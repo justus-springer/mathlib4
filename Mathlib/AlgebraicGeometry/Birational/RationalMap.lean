@@ -120,10 +120,6 @@ def compHom (f : X.PartialMap Y) (g : Y ⟶ Z) : X.PartialMap Z where
   dense_domain := f.dense_domain
   hom := f.hom ≫ g
 
-@[simp]
-lemma compHom_id (f : X.PartialMap Y) : f.compHom (𝟙 Y) = f := by
-  ext <;> simp
-
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma compHom_id (f : X.PartialMap Y) : f.compHom (𝟙 Y) = f := by
@@ -137,11 +133,6 @@ instance [X.Over S] [Y.Over S] [Z.Over S] (f : X.PartialMap Y) (g : Y ⟶ Z)
 @[simps]
 def _root_.AlgebraicGeometry.Scheme.Hom.toPartialMap (f : X ⟶ Y) :
     X.PartialMap Y := ⟨⊤, dense_univ, X.topIso.hom ≫ f⟩
-
-instance (f : X ⟶ Y) [IsDominant f] : IsDominant f.toPartialMap.hom := by
-  dsimp
-  have := Opens.isDominant_ι (X := X) (U := ⊤) dense_univ
-  infer_instance
 
 lemma _root_.AlgebraicGeometry.Scheme.Hom.toPartialMap_compHom (f : X ⟶ Y) (g : Y ⟶ Z) :
     f.toPartialMap.compHom g = (f ≫ g).toPartialMap := rfl
@@ -157,18 +148,6 @@ instance (f : X ⟶ Y) [IsDominant f] : IsDominant f.toPartialMap.hom := by
   dsimp
   have := Opens.isDominant_ι (X := X) (U := ⊤) dense_univ
   infer_instance
-
-lemma _root_.AlgebraicGeometry.Scheme.Hom.toPartialMap_compHom (f : X ⟶ Y) (g : Y ⟶ Z) :
-    f.toPartialMap.compHom g = (f ≫ g).toPartialMap := rfl
-
-variable (X) in
-/-- The identity partial map. -/
-protected abbrev id : X.PartialMap X := (𝟙 X : X ⟶ X).toPartialMap
-
-@[simp]
-lemma id_compHom (f : X ⟶ Y) : (PartialMap.id X).compHom f = f.toPartialMap := by
-  apply PartialMap.ext _ _ rfl
-  simp
 
 set_option backward.defeqAttrib.useBackward true in
 instance [X.Over S] [Y.Over S] (f : X ⟶ Y) [f.IsOver S] : f.toPartialMap.IsOver S where
@@ -448,9 +427,6 @@ def RationalMap.compHom (f : X ⤏ Y) (g : Y ⟶ Z) : X ⤏ Z := by
   simp only [PartialMap.restrict_domain, PartialMap.restrict_hom, PartialMap.compHom_domain,
     PartialMap.compHom_hom] at e ⊢
   rw [reassoc_of% e]
-
-lemma RationalMap.id_compHom (f : X ⟶ Y) :
-    (RationalMap.id X).compHom f = f.toRationalMap := rfl
 
 @[simp]
 lemma RationalMap.compHom_toRationalMap (f : X.PartialMap Y) (g : Y ⟶ Z) :

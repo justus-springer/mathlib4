@@ -35,8 +35,7 @@ structure BirationalMap (X Y : Scheme.{u}) [IrreducibleSpace X] [IrreducibleSpac
 
 variable {X Y : Scheme.{u}} [IrreducibleSpace X] [IrreducibleSpace Y]
 
-#check Hom.stalkMap_congr_point
-#check Hom.stalkMap
+set_option backward.defeqAttrib.useBackward true in
 def PartialIso.toBirationalMap {X Y : Scheme.{u}} [IrreducibleSpace X] [IrreducibleSpace Y]
     (f : X.PartialIso Y) : X.BirationalMap Y where
   hom := f.toRationalMap
