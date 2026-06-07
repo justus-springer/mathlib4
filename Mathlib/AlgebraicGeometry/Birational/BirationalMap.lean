@@ -113,7 +113,8 @@ lemma PartialIso.toPartialMap_comp_symm (f : X.PartialIso Y) :
     rw [Hom.comp_preimage, Opens.ι_preimage_self, Hom.preimage_top, Opens.ι_image_top]
   · rw [PartialMap.comp_hom]
     simp_rw [toPartialMap_hom]
-    simp
+    rw [symm_iso, Iso.symm_hom]
+    rw [PartialMap.restrict_hom, Hom.toPartialMap_hom, Category.comp_id, topIso_hom]
     sorry
 
 lemma PartialIso.symm_toPartialMap_comp (f : X.PartialIso Y) :
