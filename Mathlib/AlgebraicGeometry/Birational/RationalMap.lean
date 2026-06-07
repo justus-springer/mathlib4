@@ -141,6 +141,9 @@ variable (X) in
 protected abbrev id : X.PartialMap X := (𝟙 X : X ⟶ X).toPartialMap
 
 @[simp]
+lemma id_domain : (PartialMap.id X).domain = ⊤ := rfl
+
+@[simp]
 lemma id_compHom (f : X ⟶ Y) : (PartialMap.id X).compHom f = f.toPartialMap := rfl
 
 set_option backward.defeqAttrib.useBackward true in
@@ -284,6 +287,19 @@ set_option backward.defeqAttrib.useBackward true in
 lemma restrict_equiv (f : X.PartialMap Y) (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) : (f.restrict U hU hU').equiv f :=
   ⟨U, hU, le_rfl, hU', by simp⟩
+
+lemma equiv_id_iff (f : X.PartialMap X) :
+    f.equiv (PartialMap.id X) ↔ ∃ (U : Opens X) (hU₁ : Dense (U : Set X)) (hU₂ : U ≤ f.domain),
+      (f.restrict U hU₁ hU₂).hom = U.ι := by
+  constructor
+  · intro ⟨U, hU₁, hU₂, _, e⟩
+    exact ⟨U, hU₁, hU₂, by simpa using e⟩
+  · intro ⟨U, hU₁, hU₂, e⟩
+    refine ⟨U, hU₁, hU₂, le_top, by simpa using e⟩
+
+lemma equiv_id_iff' (f : X.PartialMap X) :
+    f.equiv (PartialMap.id X) ↔ ∃ (U : Opens f.domain) (hU₁ : Dense (U : Set f.domain)), 
+      f.hom.resLE sorry := sorry
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

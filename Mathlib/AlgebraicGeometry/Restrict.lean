@@ -193,10 +193,17 @@ def Scheme.openCoverOfIsOpenCover {s : Type*} (X : Scheme.{u}) (U : s → X.Open
     simpa
 
 /-- The open sets of an open subscheme corresponds to the open sets containing in the subset. -/
-@[simps!]
 def opensRestrict :
     Scheme.Opens U ≃ { V : X.Opens // V ≤ U } :=
   (IsOpenImmersion.opensEquiv (U.ι)).trans (Equiv.subtypeEquivProp (by simp))
+
+@[simp]
+lemma opensRestrict_apply_coe (V : Scheme.Opens U) :
+    (opensRestrict U V : X.Opens) = U.ι ''ᵁ V := rfl
+
+@[simp]
+lemma opensRestrict_symm_apply (V : { V : X.Opens // V ≤ U }) :
+    (opensRestrict U).symm V = U.ι ⁻¹ᵁ V := rfl
 
 instance ΓRestrictAlgebra {X : Scheme.{u}} (U : X.Opens) :
     Algebra Γ(X, ⊤) Γ(U, ⊤) :=

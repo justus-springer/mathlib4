@@ -136,7 +136,13 @@ def PartialIso.toBirationalMap (f : X.PartialIso Y) : X.BirationalMap Y where
       PartialIso.symm_toPartialMap_comp]
     apply PartialMap.restrict_equiv
 
-def BirationalMap.toPartialIso (f : X.BirationalMap Y) : X.PartialIso Y := sorry
+def BirationalMap.toPartialIso (f : X.BirationalMap Y) : X.PartialIso Y := by
+  let e := f.hom_comp_inv_id
+  rw [← f.inv.toRationalMap_representative, RationalMap.comp_def, RationalMap.id,
+    PartialMap.toRationalMap_eq_iff, PartialMap.equiv_id_iff] at e
+  choose U hU₁ hU₂ h using e
+  simp at h
+  sorry
 
 lemma BirationalMap.birational (f : X.BirationalMap Y) : X.Birational Y :=
   ⟨f.toPartialIso⟩
