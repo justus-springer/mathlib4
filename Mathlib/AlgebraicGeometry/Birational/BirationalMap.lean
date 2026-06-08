@@ -109,47 +109,46 @@ lemma PartialIso.toPartialMap_comp_symm (f : X.PartialIso Y) :
     f.toPartialMap.comp f.symm.toPartialMap =
       (PartialMap.id X).restrict f.source f.dense_source le_top := by
   ext1
-  · change f.source.ι ''ᵁ (f.iso.hom ≫ f.target.ι) ⁻¹ᵁ f.target = f.source
-    rw [Hom.comp_preimage, Opens.ι_preimage_self, Hom.preimage_top, Opens.ι_image_top]
-  · rw [PartialMap.comp_hom]
-    simp_rw [toPartialMap_hom]
-    rw [symm_iso, Iso.symm_hom]
-    rw [PartialMap.restrict_hom, Hom.toPartialMap_hom, Category.comp_id, topIso_hom]
-    sorry
+  · -- This change seems hard to remove
+    change f.source.ι ''ᵁ f.iso.hom ⁻¹ᵁ f.target.ι ⁻¹ᵁ f.target = f.source
+    rw [Opens.ι_preimage_self, Hom.preimage_top, Opens.ι_image_top]
+  · -- This change seems hard to remove
+    change (f.source.ι.isoImage (f.iso.hom ⁻¹ᵁ f.target.ι ⁻¹ᵁ f.target)).inv ≫
+      (f.iso.hom ≫ f.target.ι) ∣_ f.target ≫ f.iso.inv ≫ f.source.ι = _
+    simp_rw [morphismRestrict_comp, Opens.morphismRestrict_ι, homOfLE_ι,
+      morphismRestrict_ι, Category.assoc, Iso.hom_inv_id_assoc, Hom.isoImage_inv_ι, isoOfEq_hom,
+      PartialMap.restrict_hom, PartialMap.id_domain, Hom.toPartialMap_hom, topIso_hom,
+      Category.comp_id, homOfLE_ι]
+    exact (X.homOfLE_ι _).symm
 
 lemma PartialIso.symm_toPartialMap_comp (f : X.PartialIso Y) :
     f.symm.toPartialMap.comp f.toPartialMap =
       (PartialMap.id Y).restrict f.target f.dense_target le_top := by
   ext1
-  · sorry
-  · sorry
+  · -- This change seems hard to remove
+    change f.target.ι ''ᵁ f.iso.inv ⁻¹ᵁ f.source.ι ⁻¹ᵁ f.source = f.target
+    rw [Opens.ι_preimage_self, Hom.preimage_top, Opens.ι_image_top]
+  · -- This change seems hard to remove
+    change (f.target.ι.isoImage (f.iso.inv ⁻¹ᵁ f.source.ι ⁻¹ᵁ f.source)).inv ≫
+      (f.iso.inv ≫ f.source.ι) ∣_ f.source ≫ f.iso.hom ≫ f.target.ι = _
+    simp_rw [morphismRestrict_comp, Opens.morphismRestrict_ι, homOfLE_ι,
+      morphismRestrict_ι, Category.assoc, Iso.inv_hom_id_assoc, Hom.isoImage_inv_ι, isoOfEq_hom,
+      PartialMap.restrict_hom, PartialMap.id_domain, Hom.toPartialMap_hom, topIso_hom,
+      Category.comp_id, homOfLE_ι]
+    exact (Y.homOfLE_ι _).symm
 
 def PartialIso.toBirationalMap (f : X.PartialIso Y) : X.BirationalMap Y where
   hom := f.toRationalMap
   inv := f.symm.toRationalMap
   hom_comp_inv_id := by
-    rw [RationalMap.toRationalMap_comp, PartialMap.toRationalMap_eq_iff]
-    rw [PartialMap.equiv_id_iff]
-    refine ⟨f.source, f.dense_source, ?_, ?_⟩
-    · change f.source ≤ f.source.ι ''ᵁ (f.iso.hom ≫ f.target.ι) ⁻¹ᵁ f.target
-      rw [Hom.comp_preimage, Opens.ι_preimage_self, Hom.preimage_top, Opens.ι_image_top]
-    · ext x
-      simp
-      sorry
-    /-   PartialIso.toPartialMap_comp_symm] -/
-    /- apply PartialMap.restrict_equiv -/
+    rw [RationalMap.toRationalMap_comp, PartialMap.toRationalMap_eq_iff,
+      PartialIso.toPartialMap_comp_symm]
+    apply PartialMap.restrict_equiv
   inv_comp_hom_id := by
     rw [RationalMap.toRationalMap_comp, PartialMap.toRationalMap_eq_iff,
       PartialIso.symm_toPartialMap_comp]
     apply PartialMap.restrict_equiv
 
-
-/-
-If we have a scheme morphism `f : X ⟶ Y` and we know the image of `f`
-is contained in some `U : Opens Y`, how do we get the induced map `f : X ⟶ U`?
-Suppose I have `U : Opens Y` and `f : U ⟶ X` and `g : X ⟶ Y` and I know `f ≫ g = U.ι`.
-Then I should get that the induced maps `U ⟶ X ⟶ U` compose to the identity, right? How do I get this in mathlib?
--/
 @[stacks 0BAA "(1)"]
 lemma BirationalMap.birational (f : X.BirationalMap Y) : X.Birational Y := by
   let e := f.hom_comp_inv_id
@@ -157,7 +156,7 @@ lemma BirationalMap.birational (f : X.BirationalMap Y) : X.Birational Y := by
     PartialMap.toRationalMap_eq_iff, PartialMap.equiv_id_iff] at e
   obtain ⟨U, hU₁, hU₂, h⟩ := e
   simp at h
-  refine ⟨?_, ?_, ?_, ?_, ?_⟩
+  -- TODO
   sorry
 
 

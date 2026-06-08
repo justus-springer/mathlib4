@@ -610,6 +610,11 @@ theorem morphismRestrict_homOfLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U V : Y.Opens
     (f ∣_ U) ≫ Y.homOfLE e = X.homOfLE (f.preimage_mono e) ≫ (f ∣_ V) := by
   simp [← cancel_mono V.ι]
 
+@[simp]
+lemma Scheme.Opens.morphismRestrict_ι {X : Scheme.{u}} (U : X.Opens) :
+    U.ι ∣_ U = Scheme.homOfLE _ U.ι_preimage_self.le ≫ (⊤ : Opens U).ι := by
+  simp [← cancel_mono U.ι]
+
 @[reassoc (attr := simp)]
 lemma Scheme.Hom.isoImage_preimage_hom_homOfLE {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f]
     (U : Y.Opens) :
