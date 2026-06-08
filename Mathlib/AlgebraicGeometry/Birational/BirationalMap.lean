@@ -128,24 +128,38 @@ def PartialIso.toBirationalMap (f : X.PartialIso Y) : X.BirationalMap Y where
   hom := f.toRationalMap
   inv := f.symm.toRationalMap
   hom_comp_inv_id := by
-    rw [RationalMap.toRationalMap_comp, PartialMap.toRationalMap_eq_iff,
-      PartialIso.toPartialMap_comp_symm]
-    apply PartialMap.restrict_equiv
+    rw [RationalMap.toRationalMap_comp, PartialMap.toRationalMap_eq_iff]
+    rw [PartialMap.equiv_id_iff]
+    refine ⟨f.source, f.dense_source, ?_, ?_⟩
+    · change f.source ≤ f.source.ι ''ᵁ (f.iso.hom ≫ f.target.ι) ⁻¹ᵁ f.target
+      rw [Hom.comp_preimage, Opens.ι_preimage_self, Hom.preimage_top, Opens.ι_image_top]
+    · ext x
+      simp
+      sorry
+    /-   PartialIso.toPartialMap_comp_symm] -/
+    /- apply PartialMap.restrict_equiv -/
   inv_comp_hom_id := by
     rw [RationalMap.toRationalMap_comp, PartialMap.toRationalMap_eq_iff,
       PartialIso.symm_toPartialMap_comp]
     apply PartialMap.restrict_equiv
 
-def BirationalMap.toPartialIso (f : X.BirationalMap Y) : X.PartialIso Y := by
+
+/-
+If we have a scheme morphism `f : X ⟶ Y` and we know the image of `f`
+is contained in some `U : Opens Y`, how do we get the induced map `f : X ⟶ U`?
+Suppose I have `U : Opens Y` and `f : U ⟶ X` and `g : X ⟶ Y` and I know `f ≫ g = U.ι`.
+Then I should get that the induced maps `U ⟶ X ⟶ U` compose to the identity, right? How do I get this in mathlib?
+-/
+@[stacks 0BAA "(1)"]
+lemma BirationalMap.birational (f : X.BirationalMap Y) : X.Birational Y := by
   let e := f.hom_comp_inv_id
   rw [← f.inv.toRationalMap_representative, RationalMap.comp_def, RationalMap.id,
     PartialMap.toRationalMap_eq_iff, PartialMap.equiv_id_iff] at e
-  choose U hU₁ hU₂ h using e
+  obtain ⟨U, hU₁, hU₂, h⟩ := e
   simp at h
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩
   sorry
 
-lemma BirationalMap.birational (f : X.BirationalMap Y) : X.Birational Y :=
-  ⟨f.toPartialIso⟩
 
 end Scheme
 

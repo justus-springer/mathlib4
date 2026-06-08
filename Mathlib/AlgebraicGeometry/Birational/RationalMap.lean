@@ -297,10 +297,6 @@ lemma equiv_id_iff (f : X.PartialMap X) :
   · intro ⟨U, hU₁, hU₂, e⟩
     refine ⟨U, hU₁, hU₂, le_top, by simpa using e⟩
 
-lemma equiv_id_iff' (f : X.PartialMap X) :
-    f.equiv (PartialMap.id X) ↔ ∃ (U : Opens f.domain) (hU₁ : Dense (U : Set f.domain)), 
-      f.hom.resLE sorry := sorry
-
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma equiv_of_fromSpecStalkOfMem_eq [IrreducibleSpace X]
