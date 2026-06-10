@@ -150,15 +150,41 @@ def PartialIso.toBirationalMap (f : X.PartialIso Y) : X.BirationalMap Y where
     apply PartialMap.restrict_equiv
 
 @[stacks 0BAA "(1)"]
-lemma BirationalMap.birational (f : X.BirationalMap Y) : X.Birational Y := by
-  let e := f.hom_comp_inv_id
-  rw [← f.inv.toRationalMap_representative, RationalMap.comp_def, RationalMap.id,
-    PartialMap.toRationalMap_eq_iff, PartialMap.equiv_id_iff] at e
-  obtain ⟨U, hU₁, hU₂, h⟩ := e
-  simp at h
-  -- TODO
+lemma BirationalMap.birational (i : X.BirationalMap Y) : X.Birational Y := by
+  let f := i.hom.representative
+  let g := i.inv.representative
+  let U₀ := f.domain
+  let V₀ := g.domain
+  have f_comp_g : (f.comp g).equiv (PartialMap.id X) := by
+    have := i.hom_comp_inv_id
+    rw [← i.inv.toRationalMap_representative, RationalMap.comp_def, RationalMap.id,
+      PartialMap.toRationalMap_eq_iff] at this
+    exact this
+  rw [PartialMap.equiv_id_iff] at f_comp_g
+  obtain ⟨U₁, dense_U₁, U₁_le : U₁ ≤ U₀.ι ''ᵁ f.hom ⁻¹ᵁ V₀, hU₁⟩ := f_comp_g
+  have U₁_le_U₀ : U₁ ≤ U₀ := U₁_le.trans (U₀.ι_image_le _)
+  change X.homOfLE U₁_le ≫ (U₀.ι.isoImage (f.hom ⁻¹ᵁ V₀)).inv ≫ f.hom ∣_ V₀ ≫ g.hom = U₁.ι at hU₁
+  let U₂ : Opens U₀ := U₀.ι ⁻¹ᵁ U₁
+  have U₂_le : U₂ ≤ f.hom ⁻¹ᵁ V₀ := by
+    have := Hom.preimage_mono U₀.ι U₁_le
+    simp only [Hom.preimage_image_eq] at this
+    exact this
+  let g' := g.restrict (V₀.ι ''ᵁ g.hom ⁻¹ᵁ U₁) sorry (V₀.ι_image_le _)
+  let f' := f.restrict U₁ dense_U₁ U₁_le_U₀
+  have g'_comp_f' : (g'.comp f').equiv (PartialMap.id Y) := by
+    have foo₁ := f.restrict_equiv U₁ dense_U₁ U₁_le_U₀
+    have foo₂ := g.restrict_equiv (V₀.ι ''ᵁ g.hom ⁻¹ᵁ U₁) sorry (V₀.ι_image_le _)
+    have foo₃ : (g'.comp f').equiv (g.comp f) := PartialMap.comp_equiv_of_equiv _ _ foo₂ _ _ foo₁
+    have := i.inv_comp_hom_id
+    rw [← i.hom.toRationalMap_representative, RationalMap.comp_def, RationalMap.id,
+      PartialMap.toRationalMap_eq_iff] at this
+    exact foo₃.trans this
+  rw [PartialMap.equiv_id_iff] at g'_comp_f'
+  obtain ⟨V₁, dense_V₁, V₁_le, hV₁⟩ := g'_comp_f'
+  have V₁_le_blah : V₁ ≤ V₀.ι ''ᵁ g.hom ⁻¹ᵁ U₁ := by
+    exact V₁_le.trans (Opens.ι_image_le _ _)
+  let V₂ : Opens V₀ := V₀.ι ⁻¹ᵁ V₁
   sorry
-
 
 end Scheme
 
