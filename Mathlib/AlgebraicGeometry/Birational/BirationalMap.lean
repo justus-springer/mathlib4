@@ -149,15 +149,18 @@ def PartialIso.toBirationalMap (f : X.PartialIso Y) : X.BirationalMap Y where
       PartialIso.symm_toPartialMap_comp]
     apply PartialMap.restrict_equiv
 
+/-
+If `g` is an open immersion, is `f ≫ g` always an open immersion?
+-/
 @[stacks 0BAA "(1)"]
-lemma BirationalMap.birational (i : X.BirationalMap Y) : X.Birational Y := by
-  let f := i.hom.representative
-  let g := i.inv.representative
+lemma BirationalMap.birational (b : X.BirationalMap Y) : X.Birational Y := by
+  let f := b.hom.representative
+  let g := b.inv.representative
   let U₀ := f.domain
   let V₀ := g.domain
   have f_comp_g : (f.comp g).equiv (PartialMap.id X) := by
-    have := i.hom_comp_inv_id
-    rw [← i.inv.toRationalMap_representative, RationalMap.comp_def, RationalMap.id,
+    have := b.hom_comp_inv_id
+    rw [← b.inv.toRationalMap_representative, RationalMap.comp_def, RationalMap.id,
       PartialMap.toRationalMap_eq_iff] at this
     exact this
   rw [PartialMap.equiv_id_iff] at f_comp_g
@@ -169,22 +172,74 @@ lemma BirationalMap.birational (i : X.BirationalMap Y) : X.Birational Y := by
     have := Hom.preimage_mono U₀.ι U₁_le
     simp only [Hom.preimage_image_eq] at this
     exact this
-  let g' := g.restrict (V₀.ι ''ᵁ g.hom ⁻¹ᵁ U₁) sorry (V₀.ι_image_le _)
+  have U₁_eq : U₁ = U₀.ι ''ᵁ U₂ := by
+    have := (opensRestrict U₀).apply_symm_apply ⟨U₁, U₁_le_U₀⟩
+    exact congr($this.1).symm
   let f' := f.restrict U₁ dense_U₁ U₁_le_U₀
+  let g' := g.restrict (V₀.ι ''ᵁ g.hom ⁻¹ᵁ U₁) ((g.comp f').dense_domain) (V₀.ι_image_le _)
   have g'_comp_f' : (g'.comp f').equiv (PartialMap.id Y) := by
     have foo₁ := f.restrict_equiv U₁ dense_U₁ U₁_le_U₀
-    have foo₂ := g.restrict_equiv (V₀.ι ''ᵁ g.hom ⁻¹ᵁ U₁) sorry (V₀.ι_image_le _)
+    have foo₂ := g.restrict_equiv (V₀.ι ''ᵁ g.hom ⁻¹ᵁ U₁) ((g.comp f').dense_domain) (V₀.ι_image_le _)
     have foo₃ : (g'.comp f').equiv (g.comp f) := PartialMap.comp_equiv_of_equiv _ _ foo₂ _ _ foo₁
-    have := i.inv_comp_hom_id
-    rw [← i.hom.toRationalMap_representative, RationalMap.comp_def, RationalMap.id,
+    have := b.inv_comp_hom_id
+    rw [← b.hom.toRationalMap_representative, RationalMap.comp_def, RationalMap.id,
       PartialMap.toRationalMap_eq_iff] at this
     exact foo₃.trans this
   rw [PartialMap.equiv_id_iff] at g'_comp_f'
   obtain ⟨V₁, dense_V₁, V₁_le, hV₁⟩ := g'_comp_f'
-  have V₁_le_blah : V₁ ≤ V₀.ι ''ᵁ g.hom ⁻¹ᵁ U₁ := by
+
+  -- change hV₁
+  unfold g' at hV₁
+  simp only [PartialMap.restrict_hom, PartialMap.comp_hom] at hV₁
+  conv at hV₁ =>
+    lhs;
+    enter [2]
+    change (Hom.isoImage (V₀.ι ''ᵁ g.hom ⁻¹ᵁ U₁).ι
+      (Y.homOfLE (V₀.ι_image_le (g.hom ⁻¹ᵁ U₁)) ⁻¹ᵁ g.hom ⁻¹ᵁ U₁)).inv ≫ _
+    enter [2]
+    change (_ ≫ _) ∣_ _ ≫ _
+    rw [morphismRestrict_comp]
+    change ((Y.homOfLE _) ∣_ (g.hom ⁻¹ᵁ U₁) ≫ g.hom ∣_ U₁) ≫ _
+    rw [Category.assoc]
+    enter [2, 2]
+    change X.homOfLE U₁_le_U₀ ≫ f.hom
+  erw [isoImage_ι_inv_morphismRestrict_homOfLE_assoc (V₀.ι_image_le (g.hom ⁻¹ᵁ U₁)) (g.hom ⁻¹ᵁ U₁)] at hV₁
+  erw [homOfLE_homOfLE_assoc] at hV₁
+  
+
+  have V₁_le_V₀_ι : V₁ ≤ V₀.ι ''ᵁ g.hom ⁻¹ᵁ U₁ := by
     exact V₁_le.trans (Opens.ι_image_le _ _)
+  have V₁_le_V₀ : V₁ ≤ V₀ := V₁_le_V₀_ι.trans (V₀.ι_image_le _)
   let V₂ : Opens V₀ := V₀.ι ⁻¹ᵁ V₁
-  sorry
+  have V₂_le : V₂ ≤ g.hom ⁻¹ᵁ U₁ := by
+    have := Hom.preimage_mono V₀.ι V₁_le_V₀_ι
+    simp only [Hom.preimage_image_eq] at this
+    exact this
+  have V₁_eq : V₁ = V₀.ι ''ᵁ V₂ := by
+    have := (opensRestrict V₀).apply_symm_apply ⟨V₁, V₁_le_V₀⟩
+    exact congr($this.1).symm
+  have U₂_le_new : U₂ ≤ f.hom ⁻¹ᵁ V₁ := by
+    intro x hx
+    simp
+    sorry
+  
+  -- continue changing hV₁
+  rw [← Y.homOfLE_homOfLE V₁_eq.le (V₀.ι.image_mono V₂_le)] at hV₁
+  rw [Category.assoc] at hV₁
+  rw [← V₀.ι.isoImage_inv_homOfLE_assoc _ _ V₂_le] at hV₁
+
+  -- define the isos
+  let i := Y.homOfLE V₁_eq.le ≫ (V₀.ι.isoImage V₂).inv ≫ g.hom.resLE U₁ V₂ V₂_le
+  let j := X.homOfLE U₁_eq.le ≫ (U₀.ι.isoImage U₂).inv ≫ f.hom.resLE V₁ U₂ U₂_le_new
+  refine ⟨U₁, dense_U₁, V₁, dense_V₁, ⟨j, i, ?_, ?_⟩⟩
+  · -- hard?
+    sorry
+  · unfold i j Hom.resLE
+    rw [← cancel_mono V₁.ι]
+    simp only [Category.assoc, Category.id_comp]
+    simp only [morphismRestrict_ι, homOfLE_ι_assoc, Opens.isoImage_ι_inv_ι_assoc,
+      homOfLE_homOfLE_assoc]
+    exact hV₁
 
 end Scheme
 
