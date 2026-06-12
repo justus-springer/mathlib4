@@ -150,6 +150,10 @@ def PartialIso.toBirationalMap (f : X.PartialIso Y) : X.BirationalMap Y where
     apply PartialMap.restrict_equiv
 
 /-
+I have a dominant morphism `f : X ⟶ Y` of schemes. Is the range of `f` always open?
+-/
+
+/-
 If `g` is an open immersion, is `f ≫ g` always an open immersion?
 -/
 @[stacks 0BAA "(1)"]
@@ -218,16 +222,16 @@ lemma BirationalMap.birational (b : X.BirationalMap Y) : X.Birational Y := by
   have V₁_eq : V₁ = V₀.ι ''ᵁ V₂ := by
     have := (opensRestrict V₀).apply_symm_apply ⟨V₁, V₁_le_V₀⟩
     exact congr($this.1).symm
-  have U₂_le_new : U₂ ≤ f.hom ⁻¹ᵁ V₁ := by
-    intro x hx
-    simp
-    sorry
-  
   -- continue changing hV₁
   rw [← Y.homOfLE_homOfLE V₁_eq.le (V₀.ι.image_mono V₂_le)] at hV₁
   rw [Category.assoc] at hV₁
   rw [← V₀.ι.isoImage_inv_homOfLE_assoc _ _ V₂_le] at hV₁
 
+  have U₂_le_new : U₂ ≤ f.hom ⁻¹ᵁ V₁ := by
+    intro x hx
+    simp
+    sorry
+  
   -- define the isos
   let i := Y.homOfLE V₁_eq.le ≫ (V₀.ι.isoImage V₂).inv ≫ g.hom.resLE U₁ V₂ V₂_le
   let j := X.homOfLE U₁_eq.le ≫ (U₀.ι.isoImage U₂).inv ≫ f.hom.resLE V₁ U₂ U₂_le_new
