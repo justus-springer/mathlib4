@@ -20,9 +20,10 @@ universe u
 
 namespace AlgebraicGeometry
 
-abbrev Cremona (n : Type u) (S : Scheme.{u}) [IsIntegral S] := 𝔸(n; S).BirationalMap 𝔸(n; S)
+abbrev Cremona (n : Type u) (S : Scheme.{u}) [IrreducibleSpace S] :=
+  Scheme.BirationalMapOver S 𝔸(n; S) 𝔸(n; S)
 
-noncomputable example (n : Type u) (S : Scheme.{u}) [IsIntegral S] : Group (Cremona n S) :=
+noncomputable example (n : Type u) (S : Scheme.{u}) [IrreducibleSpace S] : Group (Cremona n S) :=
   inferInstance
 
 end AlgebraicGeometry

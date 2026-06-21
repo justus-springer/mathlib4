@@ -392,6 +392,10 @@ variable (S) in
 class RationalMap.IsOver [X.Over S] [Y.Over S] (f : X ⤏ Y) : Prop where
   exists_partialMap_over : ∃ g : X.PartialMap Y, g.IsOver S ∧ g.toRationalMap = f
 
+instance RationalMap.isOver_toRationalMap [X.Over S] [Y.Over S] (f : PartialMap X Y) [f.IsOver S] :
+    f.toRationalMap.IsOver S where
+  exists_partialMap_over := ⟨f, inferInstance, rfl⟩
+
 lemma PartialMap.toRationalMap_surjective : Function.Surjective (@toRationalMap X Y) :=
   Quotient.exists_rep
 
