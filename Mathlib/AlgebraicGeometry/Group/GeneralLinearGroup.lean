@@ -50,32 +50,27 @@ abbrev counitAux : MvPolynomial (Fin n × Fin n) K →ₐ[K] K :=
 lemma Matrix.of_self {m n α : Type*} (M : Matrix m n α) : Matrix.of M = M := rfl
 
 noncomputable def counit : Alg K n →ₐ[K] K :=
-  IsLocalization.liftAlgHom (M := Submonoid.powers (detPolynomial K n))
+  IsLocalization.Away.liftAlgHom (detPolynomial K n)
     (f := aeval ((Equiv.curry _ _ _).symm (1 : Matrix (Fin n) (Fin n) K))) <| by
-    rintro ⟨y, k, rfl⟩
-    simp only [aeval_eq_eval, Equiv.curry_symm_apply, map_pow]
-    apply IsUnit.pow
-    simp [Matrix.eval_det_mvPolynomialX]
+      simp [Matrix.eval_det_mvPolynomialX]
 
 noncomputable abbrev comulAux : MvPolynomial (Fin n × Fin n) K →ₐ[K] Alg K n ⊗[K] Alg K n :=
   aeval fun (i, j) => ∑ k, ι (X (i, k)) ⊗ₜ ι (X (k, j))
 
 noncomputable def comul : Alg K n →ₐ[K] Alg K n ⊗[K] Alg K n :=
-  IsLocalization.liftAlgHom (M := Submonoid.powers (detPolynomial K n)) (f := aeval fun (i, j) => ∑ k, ι (X (i, k)) ⊗ₜ ι (X (k, j))) <| by
-    rintro ⟨y, k, rfl⟩
-    simp only [map_pow]
-    apply IsUnit.pow
-    have h : (comulAux K n).mapMatrix (.mvPolynomialX (Fin n) (Fin n) K) =
-        (Algebra.TensorProduct.includeLeftRingHom.comp ι).mapMatrix
-          (.mvPolynomialX (Fin n) (Fin n) K) *
-        (Algebra.TensorProduct.includeRight.toRingHom.comp ι).mapMatrix
-          (.mvPolynomialX (Fin n) (Fin n) K) := by
-      ext i j
-      simp [Matrix.mul_apply, comulAux]
-    rw [AlgHom.map_det, h, Matrix.det_mul, ← RingHom.map_det, ← RingHom.map_det]
-    exact IsUnit.mul
-      (isUnit_ι_detPolynomial.map Algebra.TensorProduct.includeLeftRingHom)
-      (isUnit_ι_detPolynomial.map Algebra.TensorProduct.includeRight.toRingHom)
+  IsLocalization.Away.liftAlgHom (detPolynomial K n)
+    (f := aeval fun (i, j) => ∑ k, ι (X (i, k)) ⊗ₜ ι (X (k, j))) <| by
+      have h : (comulAux K n).mapMatrix (.mvPolynomialX (Fin n) (Fin n) K) =
+          (Algebra.TensorProduct.includeLeftRingHom.comp ι).mapMatrix
+            (.mvPolynomialX (Fin n) (Fin n) K) *
+          (Algebra.TensorProduct.includeRight.toRingHom.comp ι).mapMatrix
+            (.mvPolynomialX (Fin n) (Fin n) K) := by
+        ext i j
+        simp [Matrix.mul_apply, comulAux]
+      rw [AlgHom.map_det, h, Matrix.det_mul, ← RingHom.map_det, ← RingHom.map_det]
+      exact IsUnit.mul
+        (isUnit_ι_detPolynomial.map Algebra.TensorProduct.includeLeftRingHom)
+        (isUnit_ι_detPolynomial.map Algebra.TensorProduct.includeRight.toRingHom)
 
 noncomputable instance : Bialgebra K (Alg K n) := .ofAlgHom (comul ..) (counit ..)
   sorry
