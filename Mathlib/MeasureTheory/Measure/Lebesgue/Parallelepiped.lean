@@ -38,7 +38,8 @@ variable [BorelSpace E] [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMea
 
 theorem halfOpenParallelepiped_ae_eq_parallelepiped (v : ι → E) :
     halfOpenParallelepiped ℝ v =ᵐ[μ] parallelepiped ℝ v := by
-  refine (halfOpenParallelepiped_subset_parallelepiped v).eventuallyLE.antisymm (ae_le_set.mpr ?_)
+  apply (halfOpenParallelepiped_subset_parallelepiped v).eventuallySubset.antisymm
+  rw [ae_subset]
   refine measure_mono_null ?_ ((convex_parallelepiped v).addHaar_frontier μ)
   rw [(isClosed_parallelepiped v).frontier_eq]
   exact sdiff_subset_sdiff_right (interior_parallelepiped_subset_halfOpenParallelepiped v)
