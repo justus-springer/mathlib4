@@ -177,7 +177,7 @@ theorem covolume_div_covolume_eq_relIndex {ι : Type*} [Fintype ι] (L₁ L₂ :
 A more general version of `covolume_div_covolume_eq_relIndex`;
 see the `Naming conventions` section in the introduction.
 -/
-@[deprecated Submodule.covolume_div_covolume_eq_relIndex' +typeChanged (since := "2026-11-11")]
+@[deprecated Submodule.covolume_div_covolume_eq_relIndex +typeChanged (since := "2026-11-11")]
 theorem covolume_div_covolume_eq_relIndex' {E : Type*} [NormedAddCommGroup E]
     [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
     (L₁ L₂ : Submodule ℤ E) [DiscreteTopology L₁] [IsZLattice ℝ L₁] [DiscreteTopology L₂]
@@ -204,7 +204,7 @@ theorem volume_image_eq_volume_div_covolume {ι : Type*} [Fintype ι] (L : Submo
 set_option backward.isDefEq.respectTransparency.types false in
 /-- A more general version of `ZLattice.volume_image_eq_volume_div_covolume`;
 see the `Naming conventions` section in the introduction. -/
-@[deprecated Submodule.volume_image_eq_volume_div_covolume' +typeChanged (since := "2026-11-11")]
+@[deprecated Submodule.volume_image_eq_volume_div_covolume +typeChanged (since := "2026-11-11")]
 theorem volume_image_eq_volume_div_covolume' {E : Type*} [NormedAddCommGroup E]
     [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
     (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L] {ι : Type*} [Fintype ι]
