@@ -58,6 +58,10 @@ lemma _root_.Module.Basis.extendOfIsFullLattice_apply {M : Submodule R V} [IsFul
     {ι : Type*} (b : Basis ι R M) (k : ι) : b.extendOfIsFullLattice A k = (b k).val := by
   simp [Basis.extendOfIsFullLattice]
 
+lemma _root_.Module.Basis.coe_extendOfIsFullLattice {M : Submodule R V} [IsFullLattice A M]
+    {ι : Type*} (b : Basis ι R M) : b.extendOfIsFullLattice A = Subtype.val ∘ b :=
+  funext (b.extendOfIsFullLattice_apply _)
+
 @[simp]
 lemma _root_.Module.Basis.extendOfIsFullLattice_repr_apply {M : Submodule R V}
     [IsFullLattice A M] {ι : Type*} (b : Basis ι R M) (x : M) (i : ι) :
