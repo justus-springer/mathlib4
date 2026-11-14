@@ -49,6 +49,11 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
 
 variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
 
+@[aesop (rule_sets := [finiteness]) safe apply]
+theorem measure_parallelepiped_ne_top [MeasurableSpace E] {μ : Measure E}
+    [IsFiniteMeasureOnCompacts μ] (v : ι → E) : μ (parallelepiped ℝ v) ≠ ⊤ :=
+  (isCompact_parallelepiped v).measure_lt_top.ne
+
 namespace Module.Basis
 
 /-- The parallelepiped spanned by a basis, as a compact set with nonempty interior. -/

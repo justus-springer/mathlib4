@@ -24,6 +24,7 @@ parallelepipeds.
 @[expose] public section
 
 open MeasureTheory Measure Set
+open scoped ENNReal
 
 variable {ι E : Type*} [Fintype ι] [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
 
@@ -47,6 +48,11 @@ theorem halfOpenParallelepiped_ae_eq_parallelepiped (v : ι → E) :
 theorem addHaar_halfOpenParallelepiped (v : ι → E) :
     μ (halfOpenParallelepiped ℝ v) = μ (parallelepiped ℝ v) :=
   measure_congr (halfOpenParallelepiped_ae_eq_parallelepiped μ v)
+
+@[aesop (rule_sets := [finiteness]) safe apply]
+theorem addHaar_halfOpenParallelepiped_ne_top (v : ι → E) :
+    μ (halfOpenParallelepiped ℝ v) ≠ ∞ :=
+  addHaar_halfOpenParallelepiped μ v ▸ measure_parallelepiped_ne_top v
 
 theorem addHaar_halfOpenParallelepiped_ne_zero (b : Module.Basis ι ℝ E) :
     μ (halfOpenParallelepiped ℝ b) ≠ 0 := by
