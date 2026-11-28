@@ -60,7 +60,7 @@ variable {R : Type*} [CommRing R]
 namespace Submodule
 
 /-- An `R`-submodule `M` of an `A`-module `V` is a lattice if it is finitely generated and every
-`R`-linearly independent subset of `M` is `A`-linearly independent. If `A is a field, this is
+`R`-linearly independent subset of `M` is `A`-linearly independent. If `A` is a field, this is
 equivalent to the `R`-rank of `M` being equal to the `A`-rank of its `A`-span, see
 `Submodule.IsLattice.iff_fg_and_finrank_span_eq_finrank`.
 

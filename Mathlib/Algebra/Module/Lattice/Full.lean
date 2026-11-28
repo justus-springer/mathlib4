@@ -33,7 +33,9 @@ variable {R : Type*} [CommRing R]
 
 namespace Submodule
 
-/-- A lattice that spans `V` over `A`. -/
+/-- An `R`-submodule `M` of an `A`-module `V` is a full lattice if it is a lattice, i.e. it is
+finitely generated and every `R`-linearly independent subset of `M` is `A`-linearly independent,
+and if additionally, its `A`-span is all of `V`. -/
 class IsFullLattice (A : Type*) [CommRing A] [Algebra R A] {V : Type*} [AddCommGroup V]
     [Module R V] [Module A V] [IsScalarTower R A V] (M : Submodule R V) extends IsLattice A M where
   span_eq_top : span A (M : Set V) = ⊤
